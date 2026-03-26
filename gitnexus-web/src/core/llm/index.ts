@@ -11,6 +11,8 @@ export * from './types';
 export {
   loadSettings,
   saveSettings,
+  isPersistenceEnabled,
+  setPersistenceEnabled,
   updateProviderSettings,
   setActiveProvider,
   getActiveProviderConfig,

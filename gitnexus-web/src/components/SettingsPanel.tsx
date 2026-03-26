@@ -3,6 +3,8 @@ import { X, Key, Server, Brain, Check, AlertCircle, Eye, EyeOff, RefreshCw, Chev
 import {
   loadSettings,
   saveSettings,
+  isPersistenceEnabled,
+  setPersistenceEnabled,
   getProviderDisplayName,
   fetchOpenRouterModels,
 } from '../core/llm/settings-service';
@@ -214,6 +216,7 @@ const checkOllamaStatus = async (baseUrl: string): Promise<{ ok: boolean; error:
 
 export const SettingsPanel = ({ isOpen, onClose, onSettingsSaved, backendUrl, isBackendConnected, onBackendUrlChange }: SettingsPanelProps) => {
   const [settings, setSettings] = useState<LLMSettings>(loadSettings);
+  const [rememberApiKeys, setRememberApiKeysState] = useState<boolean>(isPersistenceEnabled);
   const [showApiKey, setShowApiKey] = useState<Record<string, boolean>>({});
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
   // Ollama connection state
@@ -227,6 +230,7 @@ export const SettingsPanel = ({ isOpen, onClose, onSettingsSaved, backendUrl, is
   useEffect(() => {
     if (isOpen) {
       setSettings(loadSettings());
+      setRememberApiKeysState(isPersistenceEnabled());
       setSaveStatus('idle');
       setOllamaError(null);
     }
@@ -266,6 +270,7 @@ export const SettingsPanel = ({ isOpen, onClose, onSettingsSaved, backendUrl, is
 
   const handleSave = () => {
     try {
+      setPersistenceEnabled(rememberApiKeys);
       saveSettings(settings);
       setSaveStatus('saved');
       onSettingsSaved?.();
@@ -815,6 +820,31 @@ export const SettingsPanel = ({ isOpen, onClose, onSettingsSaved, backendUrl, is
           )}
 
 
+          <div className="space-y-3">
+            <label className="flex items-start gap-3 p-4 bg-elevated border border-border-subtle rounded-xl">
+              <input
+                type="checkbox"
+                checked={rememberApiKeys}
+                onChange={(e) => setRememberApiKeysState(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-border-subtle bg-surface text-accent focus:ring-accent/40"
+              />
+              <div className="space-y-1">
+                <div className="text-sm font-medium text-text-secondary">Remember API keys</div>
+                <p className="text-xs text-text-muted leading-relaxed">
+                  Off by default. When disabled, API keys stay in session storage only and are cleared when the browser session ends.
+                </p>
+              </div>
+            </label>
+
+            {rememberApiKeys && (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                <p className="text-xs text-amber-300 leading-relaxed">
+                  Warning: enabling this stores API keys in persistent browser storage. Use this only on a device you control.
+                </p>
+              </div>
+            )}
+          </div>
+
 
           {/* Privacy Note */}
           <div className="p-4 bg-elevated/50 border border-border-subtle rounded-xl">
@@ -823,8 +853,8 @@ export const SettingsPanel = ({ isOpen, onClose, onSettingsSaved, backendUrl, is
                 🔒
               </div>
               <div className="text-xs text-text-muted leading-relaxed">
-                <span className="text-text-secondary font-medium">Privacy:</span> Your API keys are stored only in your browser's local storage.
-                They're sent directly to the LLM provider when you chat. Your code never leaves your machine.
+                <span className="text-text-secondary font-medium">Privacy:</span> API keys stay in session storage by default and are sent directly to the selected LLM provider when you chat.
+                Persistent local storage is used only if you enable &quot;Remember API keys.&quot;
               </div>
             </div>
           </div>

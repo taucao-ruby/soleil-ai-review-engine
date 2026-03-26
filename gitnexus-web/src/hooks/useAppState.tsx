@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, useEffect, useMemo, ReactNode } from 'react';
 import * as Comlink from 'comlink';
 import { KnowledgeGraph, GraphNode, NodeLabel } from '../core/graph/types';
 import { PipelineProgress, PipelineResult, deserializePipelineResult } from '../types/pipeline';
@@ -410,7 +410,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       }
       return kept;
     });
-  }, [queryResult, selectedNode]);
+  }, [selectedNode]);
 
   // Auto-add a code reference when the user selects a node in the graph/tree
   useEffect(() => {
@@ -1091,7 +1091,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const value: AppState = {
+  const value = useMemo<AppState>(() => ({
     viewMode,
     setViewMode,
     graph,
@@ -1178,7 +1178,70 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     clearAICodeReferences,
     clearCodeReferences,
     codeReferenceFocus,
-  };
+  }), [
+    viewMode,
+    graph,
+    fileContents,
+    selectedNode,
+    isRightPanelOpen,
+    rightPanelTab,
+    openCodePanel,
+    openChatPanel,
+    visibleLabels,
+    toggleLabelVisibility,
+    visibleEdgeTypes,
+    toggleEdgeVisibility,
+    depthFilter,
+    highlightedNodeIds,
+    aiCitationHighlightedNodeIds,
+    aiToolHighlightedNodeIds,
+    blastRadiusNodeIds,
+    isAIHighlightsEnabled,
+    toggleAIHighlights,
+    clearAIToolHighlights,
+    clearBlastRadius,
+    queryResult,
+    clearQueryHighlights,
+    animatedNodes,
+    triggerNodeAnimation,
+    clearAnimations,
+    progress,
+    projectName,
+    serverBaseUrl,
+    availableRepos,
+    switchRepo,
+    runPipeline,
+    runPipelineFromFiles,
+    runQuery,
+    isDatabaseReady,
+    embeddingStatus,
+    embeddingProgress,
+    startEmbeddings,
+    semanticSearch,
+    semanticSearchWithContext,
+    testArrayParams,
+    llmSettings,
+    updateLLMSettings,
+    isSettingsPanelOpen,
+    isAgentReady,
+    isAgentInitializing,
+    agentError,
+    chatMessages,
+    isChatLoading,
+    currentToolCalls,
+    refreshLLMSettings,
+    initializeAgent,
+    sendChatMessage,
+    stopChatResponse,
+    clearChat,
+    codeReferences,
+    isCodePanelOpen,
+    addCodeReference,
+    removeCodeReference,
+    clearAICodeReferences,
+    clearCodeReferences,
+    codeReferenceFocus,
+  ]);
 
   return (
     <AppStateContext.Provider value={value}>

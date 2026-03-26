@@ -1,17 +1,56 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+// --- TRUST MODEL ---
+// Only these origins may use this proxy. All others are rejected at preflight.
+// The proxy exists solely to bypass browser CORS for git clone operations to GitHub.
+// Authorization headers are forwarded ONLY for trusted origins.
+const TRUSTED_ORIGINS = [
+  'https://gitnexus.vercel.app',
+  'https://gitnexus-web.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+];
+
+function getCorsHeaders(requestOrigin: string | null): Record<string, string> {
+  const origin = requestOrigin && TRUSTED_ORIGINS.includes(requestOrigin)
+    ? requestOrigin
+    : '';
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Git-Protocol',
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
+  };
+}
+
 /**
  * CORS Proxy for isomorphic-git
  * 
  * isomorphic-git calls: /api/proxy?url=https://github.com/...
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const requestOrigin = typeof req.headers.origin === 'string' ? req.headers.origin : null;
+  const corsHeaders = getCorsHeaders(requestOrigin);
+  const isTrustedOrigin = !!requestOrigin && TRUSTED_ORIGINS.includes(requestOrigin);
+
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Git-Protocol, Accept');
+    if (!isTrustedOrigin) {
+      res.status(403).json({ error: 'Untrusted origin' });
+      return;
+    }
     res.status(200).end();
+    return;
+  }
+
+  if (!isTrustedOrigin && req.headers.authorization) {
+    res.status(403).json({ error: 'Untrusted origin' });
     return;
   }
 
@@ -45,7 +84,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
     
     // Forward relevant headers
-    if (req.headers.authorization) {
+    if (isTrustedOrigin && req.headers.authorization) {
       headers['Authorization'] = req.headers.authorization as string;
     }
     if (req.headers['content-type']) {
@@ -74,8 +113,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: body ? new Uint8Array(body) : undefined,
     });
 
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Expose-Headers', '*');
 
     // Forward response headers (except ones that cause issues)

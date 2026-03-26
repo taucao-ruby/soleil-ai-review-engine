@@ -1,8 +1,8 @@
 /**
  * Settings Service
  * 
- * Handles localStorage persistence for LLM provider settings.
- * All API keys are stored locally - never sent to any server except the LLM provider.
+ * Handles browser storage for LLM provider settings.
+ * API keys are stored locally and sent only to the configured LLM provider.
  */
 
 import { 
@@ -18,63 +18,138 @@ import {
   ProviderConfig,
 } from './types';
 
+// --- CREDENTIAL STORAGE MODEL ---
+// DEFAULT: API keys are held in memory (sessionStorage) only. They do not survive
+// browser restart. This limits exposure from extensions, XSS, and shared machines.
+//
+// OPT-IN: If the user explicitly enables "Remember API keys", keys are persisted
+// to localStorage. The UI must show a warning when this is toggled on.
+//
+// TRADEOFF: We do NOT implement browser-side encryption because without a server
+// or hardware key, any JS-accessible encryption key is also JS-accessible to an
+// attacker. Fake encryption would provide false confidence. The real mitigation
+// is reducing persistence scope.
 const STORAGE_KEY = 'gitnexus-llm-settings';
+const PERSIST_PREF_KEY = 'gitnexus-persist-keys';
+
+const getDefaultSettings = (): LLMSettings => ({
+  ...DEFAULT_LLM_SETTINGS,
+  openai: { ...DEFAULT_LLM_SETTINGS.openai },
+  azureOpenAI: { ...DEFAULT_LLM_SETTINGS.azureOpenAI },
+  gemini: { ...DEFAULT_LLM_SETTINGS.gemini },
+  anthropic: { ...DEFAULT_LLM_SETTINGS.anthropic },
+  ollama: { ...DEFAULT_LLM_SETTINGS.ollama },
+  openrouter: { ...DEFAULT_LLM_SETTINGS.openrouter },
+  clusteringProvider: DEFAULT_LLM_SETTINGS.clusteringProvider
+    ? { ...DEFAULT_LLM_SETTINGS.clusteringProvider }
+    : undefined,
+});
+
+const mergeWithDefaults = (parsed: Partial<LLMSettings>): LLMSettings => {
+  const defaults = getDefaultSettings();
+  return {
+    ...defaults,
+    ...parsed,
+    openai: {
+      ...defaults.openai,
+      ...parsed.openai,
+    },
+    azureOpenAI: {
+      ...defaults.azureOpenAI,
+      ...parsed.azureOpenAI,
+    },
+    gemini: {
+      ...defaults.gemini,
+      ...parsed.gemini,
+    },
+    anthropic: {
+      ...defaults.anthropic,
+      ...parsed.anthropic,
+    },
+    ollama: {
+      ...defaults.ollama,
+      ...parsed.ollama,
+    },
+    openrouter: {
+      ...defaults.openrouter,
+      ...parsed.openrouter,
+    },
+    clusteringProvider: parsed.clusteringProvider
+      ? { ...parsed.clusteringProvider }
+      : defaults.clusteringProvider,
+  };
+};
+
+export function isPersistenceEnabled(): boolean {
+  try {
+    return localStorage.getItem(PERSIST_PREF_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function setPersistenceEnabled(enabled: boolean): void {
+  try {
+    if (enabled) {
+      localStorage.setItem(PERSIST_PREF_KEY, 'true');
+    } else {
+      localStorage.removeItem(PERSIST_PREF_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch {
+    // Storage unavailable - persistence stays off
+  }
+}
 
 /**
- * Load settings from localStorage
+ * Load settings from browser storage
  */
 export const loadSettings = (): LLMSettings => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return DEFAULT_LLM_SETTINGS;
+    const sessionData = sessionStorage.getItem(STORAGE_KEY);
+    if (sessionData) {
+      return mergeWithDefaults(JSON.parse(sessionData) as Partial<LLMSettings>);
     }
-    
-    const parsed = JSON.parse(stored) as Partial<LLMSettings>;
-    
-    // Merge with defaults to handle new fields
-    return {
-      ...DEFAULT_LLM_SETTINGS,
-      ...parsed,
-      openai: {
-        ...DEFAULT_LLM_SETTINGS.openai,
-        ...parsed.openai,
-      },
-      azureOpenAI: {
-        ...DEFAULT_LLM_SETTINGS.azureOpenAI,
-        ...parsed.azureOpenAI,
-      },
-      gemini: {
-        ...DEFAULT_LLM_SETTINGS.gemini,
-        ...parsed.gemini,
-      },
-      anthropic: {
-        ...DEFAULT_LLM_SETTINGS.anthropic,
-        ...parsed.anthropic,
-      },
-      ollama: {
-        ...DEFAULT_LLM_SETTINGS.ollama,
-        ...parsed.ollama,
-      },
-      openrouter: {
-        ...DEFAULT_LLM_SETTINGS.openrouter,
-        ...parsed.openrouter,
-      },
-    };
-  } catch (error) {
-    console.warn('Failed to load LLM settings:', error);
-    return DEFAULT_LLM_SETTINGS;
+
+    if (isPersistenceEnabled()) {
+      const localData = localStorage.getItem(STORAGE_KEY);
+      if (localData) {
+        const settings = mergeWithDefaults(JSON.parse(localData) as Partial<LLMSettings>);
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+        return settings;
+      }
+    }
+  } catch {
+    // Parse error - return defaults
+  }
+
+  return getDefaultSettings();
+};
+
+/**
+ * Save settings to browser storage
+ */
+export const saveSettings = (settings: LLMSettings): void => {
+  try {
+    const data = JSON.stringify(settings);
+    sessionStorage.setItem(STORAGE_KEY, data);
+    if (isPersistenceEnabled()) {
+      localStorage.setItem(STORAGE_KEY, data);
+    }
+  } catch {
+    // Storage unavailable
   }
 };
 
 /**
- * Save settings to localStorage
+ * Clear all settings (reset to defaults)
  */
-export const saveSettings = (settings: LLMSettings): void => {
+export const clearSettings = (): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch (error) {
-    console.error('Failed to save LLM settings:', error);
+    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Ignore
   }
 };
 
@@ -256,13 +331,6 @@ export const getActiveProviderConfig = (): ProviderConfig | null => {
  */
 export const isProviderConfigured = (): boolean => {
   return getActiveProviderConfig() !== null;
-};
-
-/**
- * Clear all settings (reset to defaults)
- */
-export const clearSettings = (): void => {
-  localStorage.removeItem(STORAGE_KEY);
 };
 
 /**

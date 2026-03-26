@@ -16,6 +16,54 @@ import { z } from 'zod';
 // Note: GRAPH_SCHEMA_DESCRIPTION from './types' is available if needed for additional context
 import { WebGPUNotAvailableError, embedText, embeddingToArray, initEmbedder, isEmbedderReady } from '../embeddings/embedder';
 
+// --- CYPHER LABEL ALLOWLIST ---
+// Only these labels are valid for Cypher query interpolation.
+// This prevents label injection in both local (LadybugDB) and backend (server) modes.
+// If the graph schema adds new node types, add them here.
+const ALLOWED_CYPHER_LABELS = new Set([
+  'File',
+  'Folder',
+  'Function',
+  'Class',
+  'Interface',
+  'Method',
+  'CodeElement',
+  'Community',
+  'Process',
+  'Project',
+  'Package',
+  'Variable',
+  'Property',
+  'Module',
+  'Namespace',
+  'Type',
+  'Enum',
+  'EnumMember',
+  'Decorator',
+  'Import',
+  'Struct',
+  'Macro',
+  'Typedef',
+  'Union',
+  'Trait',
+  'Impl',
+  'TypeAlias',
+  'Const',
+  'Static',
+  'Record',
+  'Delegate',
+  'Annotation',
+  'Constructor',
+  'Template',
+]);
+
+function validateCypherLabel(label: string): string {
+  if (!ALLOWED_CYPHER_LABELS.has(label)) {
+    throw new Error(`Invalid Cypher label: "${label}". Allowed: ${[...ALLOWED_CYPHER_LABELS].join(', ')}`);
+  }
+  return label;
+}
+
 /**
  * Tool factory - creates tools bound to the LadybugDB query functions
  */
@@ -95,7 +143,7 @@ export const createGraphRAGTools = (
         let connections = '';
         if (nodeId) {
           try {
-            const nodeLabel = nodeId.split(':')[0];
+            const nodeLabel = validateCypherLabel(nodeId.split(':')[0]);
             const connectionsQuery = `
               MATCH (n:${nodeLabel} {id: '${nodeId.replace(/'/g, "''")}'})
               OPTIONAL MATCH (n)-[r1:CodeRelation]->(dst)
@@ -135,7 +183,7 @@ export const createGraphRAGTools = (
         let clusterLabel = 'Unclustered';
         if (nodeId) {
           try {
-            const nodeLabel = nodeId.split(':')[0];
+            const nodeLabel = validateCypherLabel(nodeId.split(':')[0]);
             const clusterQuery = `
               MATCH (n:${nodeLabel} {id: '${nodeId.replace(/'/g, "''")}'})
               MATCH (n)-[:CodeRelation {type: 'MEMBER_OF'}]->(c:Community)
@@ -157,7 +205,7 @@ export const createGraphRAGTools = (
         const processes: ProcessInfo[] = [];
         if (nodeId) {
           try {
-            const nodeLabel = nodeId.split(':')[0];
+            const nodeLabel = validateCypherLabel(nodeId.split(':')[0]);
             const processQuery = `
               MATCH (n:${nodeLabel} {id: '${nodeId.replace(/'/g, "''")}'})
               MATCH (n)-[r:CodeRelation {type: 'STEP_IN_PROCESS'}]->(p:Process)
@@ -782,7 +830,7 @@ MATCH (n:Function {id: emb.nodeId}) RETURN n`,
         const nodeId = getRowValue(symbolRow, 0, 'id');
         const name = getRowValue(symbolRow, 1, 'name');
         const filePath = getRowValue(symbolRow, 2, 'filePath');
-        const nodeType = getRowValue(symbolRow, 3, 'nodeType');
+        const nodeType = validateCypherLabel(String(getRowValue(symbolRow, 3, 'nodeType')));
         
         const clusterQuery = `
           MATCH (n:${nodeType} {id: '${String(nodeId).replace(/'/g, "''")}'})
@@ -1501,3 +1549,5 @@ Additional output sections:
     impactTool,
   ];
 };
+
+export { ALLOWED_CYPHER_LABELS, validateCypherLabel };
