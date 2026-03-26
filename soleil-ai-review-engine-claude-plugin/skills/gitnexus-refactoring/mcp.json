@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "soleil-ai-review-engine": {
+      "command": "npx",
+      "args": ["-y", "soleil-ai-review-engine@latest", "mcp"]
+    }
+  }
+}

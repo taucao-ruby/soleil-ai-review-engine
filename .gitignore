@@ -42,7 +42,7 @@ coverage/
 
 
 .env*.local
-.gitnexus
+.soleil-ai-review-engine
 .claude/settings.local.json
 
 # Claude Code worktrees
@@ -60,11 +60,11 @@ repomix-output*
 # Design docs (local only)
 docs/plans/
 
-gitnexus/test/fixtures/mini-repo/*.md
-gitnexus/test/fixtures/mini-repo/.claude
-gitnexus/test/fixtures/mini-repo/.gitignore
+soleil-ai-review-engine/test/fixtures/mini-repo/*.md
+soleil-ai-review-engine/test/fixtures/mini-repo/.claude
+soleil-ai-review-engine/test/fixtures/mini-repo/.gitignore
 
 # Ignore csharp generated obj and bin folders
-gitnexus/test/fixtures/lang-resolution/**/obj
-gitnexus/test/fixtures/lang-resolution/**/bin
-GitNexus.sln
+soleil-ai-review-engine/test/fixtures/lang-resolution/**/obj
+soleil-ai-review-engine/test/fixtures/lang-resolution/**/bin
+soleil-ai-review-engine.sln

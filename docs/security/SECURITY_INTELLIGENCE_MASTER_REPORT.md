@@ -1,13 +1,13 @@
 # SECURITY INTELLIGENCE MASTER REPORT
-GitNexus-Web Tool Fitness + SOLEIL HOSTEL Graph-Based Security Review
-Adjudicated from: `gitnexus-web/docs/review/GITNEXUS_WEB_EXECUTIVE_SUMMARY.md`, `gitnexus-web/docs/review/GITNEXUS_WEB_FINDINGS_BACKLOG.md`, `gitnexus-web/docs/review/GITNEXUS_WEB_REMEDIATION_PLAN.md`, `gitnexus-web/docs/review/GITNEXUS_WEB_ARCHITECTURE_MAP.md`, `gitnexus-web/docs/review/GITNEXUS_WEB_DETAILED_REPORT.md`, direct source verification in `gitnexus-web/*`, and the prompt-supplied execution summary | Date: 2026-03-26
+soleil-ai-review-engine-Web Tool Fitness + SOLEIL HOSTEL Graph-Based Security Review
+Adjudicated from: `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_EXECUTIVE_SUMMARY.md`, `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_FINDINGS_BACKLOG.md`, `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_REMEDIATION_PLAN.md`, `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_ARCHITECTURE_MAP.md`, `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_DETAILED_REPORT.md`, direct source verification in `soleil-ai-review-engine-web/*`, and the prompt-supplied execution summary | Date: 2026-03-26
 
 ## 1. Executive Verdict
 
-### gitnexus-web tool fitness
+### soleil-ai-review-engine-web tool fitness
 `CONDITIONALLY FIT / LOW-SENSITIVITY ONLY`
 
-The tool is useful for architecture mapping, chokepoint discovery, and low-sensitivity static review because the core browser pipeline, graph tooling, and review artifacts are real and source-verifiable [CONFIRMED]. It is not yet fit to be treated as a high-assurance security adjudication surface for higher-sensitivity systems because the deployed proxy is wildcard-CORS, LLM credentials are stored in browser `localStorage`, and the `gitnexus-web` package has no package-specific automated verification path [CONFIRMED].
+The tool is useful for architecture mapping, chokepoint discovery, and low-sensitivity static review because the core browser pipeline, graph tooling, and review artifacts are real and source-verifiable [CONFIRMED]. It is not yet fit to be treated as a high-assurance security adjudication surface for higher-sensitivity systems because the deployed proxy is wildcard-CORS, LLM credentials are stored in browser `localStorage`, and the `soleil-ai-review-engine-web` package has no package-specific automated verification path [CONFIRMED].
 
 ### SOLEIL HOSTEL security posture
 `PARTIALLY VALIDATED / RE-VERIFY HIGH-RISK DOMAINS`
@@ -15,69 +15,69 @@ The tool is useful for architecture mapping, chokepoint discovery, and low-sensi
 The prompt-supplied sweep summary suggests real coverage in booking, Stripe webhook, auth, CSRF, and RBAC paths, and the named tests plus cited files are directionally credible [STRONG INFERENCE]. But all cited SOLEIL artifacts and source files are absent from this workspace, so concurrency, payment correctness, and route-protection conclusions cannot be promoted to confirmed assurance in this adjudication [NOT VERIFIED].
 
 ### Leadership summary
-Leadership should act on this sweep now for two things only: harden `gitnexus-web` before using it on more sensitive targets, and run a targeted SOLEIL booking/payment re-check focused on webhook-to-booking state transitions. The strongest backend risk signal is a reported transaction gap around Stripe webhook confirmation; the rest of the SOLEIL posture is more encouraging than alarming, but not evidenced strongly enough here to close out.
+Leadership should act on this sweep now for two things only: harden `soleil-ai-review-engine-web` before using it on more sensitive targets, and run a targeted SOLEIL booking/payment re-check focused on webhook-to-booking state transitions. The strongest backend risk signal is a reported transaction gap around Stripe webhook confirmation; the rest of the SOLEIL posture is more encouraging than alarming, but not evidenced strongly enough here to close out.
 
 ---
 
 ## 2. Scope and Evidence Base
 
 - Prior artifacts read:
-  `gitnexus-web/docs/review/GITNEXUS_WEB_EXECUTIVE_SUMMARY.md`
-  `gitnexus-web/docs/review/GITNEXUS_WEB_FINDINGS_BACKLOG.md`
-  `gitnexus-web/docs/review/GITNEXUS_WEB_REMEDIATION_PLAN.md`
-  `gitnexus-web/docs/review/GITNEXUS_WEB_ARCHITECTURE_MAP.md`
-  `gitnexus-web/docs/review/GITNEXUS_WEB_DETAILED_REPORT.md`
+  `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_EXECUTIVE_SUMMARY.md`
+  `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_FINDINGS_BACKLOG.md`
+  `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_REMEDIATION_PLAN.md`
+  `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_ARCHITECTURE_MAP.md`
+  `soleil-ai-review-engine-web/docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_DETAILED_REPORT.md`
 - Expected but missing artifacts:
   `docs/security/SECURITY_EXECUTIVE_SUMMARY.md`
-  `docs/security/GITNEXUS_WEB_TOOL_FITNESS.md`
+  `docs/security/SOLEIL_AI_REVIEW_ENGINE_WEB_TOOL_FITNESS.md`
   `docs/security/SOLEIL_HOSTEL_SECURITY_REVIEW.md`
   `docs/security/SOLEIL_HOSTEL_ATTACK_SURFACE.md`
   `docs/security/SECURITY_FINDINGS_BACKLOG.md`
   `docs/security/SECURITY_REMEDIATION_PLAN.md`
   `docs/security/GRAPH_EVIDENCE_MAP.md`
-  `docs/review/GITNEXUS_WEB_EXECUTIVE_SUMMARY.md`
-  `docs/review/GITNEXUS_WEB_FINDINGS_BACKLOG.md`
-  `docs/review/GITNEXUS_WEB_REMEDIATION_PLAN.md`
-  `docs/review/GITNEXUS_WEB_ARCHITECTURE_MAP.md`
+  `docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_EXECUTIVE_SUMMARY.md`
+  `docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_FINDINGS_BACKLOG.md`
+  `docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_REMEDIATION_PLAN.md`
+  `docs/review/SOLEIL_AI_REVIEW_ENGINE_WEB_ARCHITECTURE_MAP.md`
 - Codex execution evidence incorporated:
   reported targeted SOLEIL test names from the prompt
   reported SOLEIL file/line observations from the prompt
-  direct source confirmation of `gitnexus-web/api/proxy.ts`, `gitnexus-web/src/core/llm/settings-service.ts`, `gitnexus-web/src/hooks/useAppState.tsx`, `gitnexus-web/src/App.tsx`, `gitnexus-web/src/components/ErrorBoundary.tsx`, and `gitnexus-web/package.json`
-  direct repo-state confirmation that root CI targets `gitnexus/` rather than `gitnexus-web/`
+  direct source confirmation of `soleil-ai-review-engine-web/api/proxy.ts`, `soleil-ai-review-engine-web/src/core/llm/settings-service.ts`, `soleil-ai-review-engine-web/src/hooks/useAppState.tsx`, `soleil-ai-review-engine-web/src/App.tsx`, `soleil-ai-review-engine-web/src/components/ErrorBoundary.tsx`, and `soleil-ai-review-engine-web/package.json`
+  direct repo-state confirmation that root CI targets `soleil-ai-review-engine/` rather than `soleil-ai-review-engine-web/`
 - What was confirmed from source/tests:
-  `gitnexus-web` Batch 0 fixes for `ErrorBoundary`, `useMemo<AppState>`, and the stale `clearAICodeReferences` dependency are present in source [CONFIRMED].
-  `gitnexus-web` still exposes `Access-Control-Allow-Origin: *` in the proxy and stores LLM settings in `localStorage` [CONFIRMED].
-  No `gitnexus-web`-local tests, lint script, typecheck script, or package-local CI wiring were found [CONFIRMED].
+  `soleil-ai-review-engine-web` Batch 0 fixes for `ErrorBoundary`, `useMemo<AppState>`, and the stale `clearAICodeReferences` dependency are present in source [CONFIRMED].
+  `soleil-ai-review-engine-web` still exposes `Access-Control-Allow-Origin: *` in the proxy and stores LLM settings in `localStorage` [CONFIRMED].
+  No `soleil-ai-review-engine-web`-local tests, lint script, typecheck script, or package-local CI wiring were found [CONFIRMED].
 - What remained partial or unverified:
   No raw SOLEIL test output, source files, or graph artifacts were available.
   The prompt-reported SOLEIL findings could not be independently replayed.
-  The prompt-reported `npm run build` success for `gitnexus-web` was not re-run in this adjudication.
+  The prompt-reported `npm run build` success for `soleil-ai-review-engine-web` was not re-run in this adjudication.
 - Graph evidence availability:
-  `gitnexus-web` graph/topology evidence was available only through the review docs and source structure [CONFIRMED].
-  No live GitNexus graph resource, `GRAPH_EVIDENCE_MAP.md`, or SOLEIL graph export was available to this adjudication [CONFIRMED].
+  `soleil-ai-review-engine-web` graph/topology evidence was available only through the review docs and source structure [CONFIRMED].
+  No live soleil-ai-review-engine graph resource, `GRAPH_EVIDENCE_MAP.md`, or SOLEIL graph export was available to this adjudication [CONFIRMED].
 
 ---
 
 ## 3. System Characterization
 
-`gitnexus-web` is a browser-only code intelligence SPA: ZIP or GitHub input, Tree-sitter parsing, WASM graph database, client-side embeddings, and an LLM agent with graph/search tools [CONFIRMED]. SOLEIL HOSTEL is described in the prompt as a Laravel booking and payments backend with Stripe webhooks, Sanctum dual-mode auth, RBAC, and booking state controls [STRONG INFERENCE].
+`soleil-ai-review-engine-web` is a browser-only code intelligence SPA: ZIP or GitHub input, Tree-sitter parsing, WASM graph database, client-side embeddings, and an LLM agent with graph/search tools [CONFIRMED]. SOLEIL HOSTEL is described in the prompt as a Laravel booking and payments backend with Stripe webhooks, Sanctum dual-mode auth, RBAC, and booking state controls [STRONG INFERENCE].
 
 This combined review matters because the tool is being used to reason about a higher-stakes booking and payment system. If the analysis surface is fragile or over-trusted, leadership can get false confidence precisely where race conditions and state-machine errors matter most.
 
 ---
 
-## 4. Tool Fitness - gitnexus-web
+## 4. Tool Fitness - soleil-ai-review-engine-web
 
 ### What it does well as a security analysis surface
 
-The available evidence supports that `gitnexus-web` is good at static architecture recovery, hotspot identification, and source-driven exploration. The browser pipeline, worker boundary, graph/search stack, and multi-tool LLM surface are real and coherent in source, not just narrative [CONFIRMED]. The proxy allowlist to GitHub hosts is correctly constrained to GitHub domains and does not obviously collapse into generic SSRF [CONFIRMED].
+The available evidence supports that `soleil-ai-review-engine-web` is good at static architecture recovery, hotspot identification, and source-driven exploration. The browser pipeline, worker boundary, graph/search stack, and multi-tool LLM surface are real and coherent in source, not just narrative [CONFIRMED]. The proxy allowlist to GitHub hosts is correctly constrained to GitHub domains and does not obviously collapse into generic SSRF [CONFIRMED].
 
 ### Confirmed operational fragility
 
 - `api/proxy.ts` sets `Access-Control-Allow-Origin: *` on both preflight and proxied responses while also forwarding `Authorization` headers [CONFIRMED].
-- LLM provider settings are persisted as plaintext JSON in browser `localStorage` under `gitnexus-llm-settings` [CONFIRMED].
+- LLM provider settings are persisted as plaintext JSON in browser `localStorage` under `soleil-ai-review-engine-llm-settings` [CONFIRMED].
 - `useAppState.tsx` is still a 1111-line single-provider state chokepoint with broad cross-cutting responsibility despite the Batch 0 memoization fix [CONFIRMED].
-- There is no `gitnexus-web`-specific test suite or CI gate; root workflows operate on `gitnexus/`, not `gitnexus-web/` [CONFIRMED].
+- There is no `soleil-ai-review-engine-web`-specific test suite or CI gate; root workflows operate on `soleil-ai-review-engine/`, not `soleil-ai-review-engine-web/` [CONFIRMED].
 - A React `ErrorBoundary` was absent in the prior review state and is now present around `AppContent`; this specific failure-path issue is fixed in Batch 0 [CONFIRMED].
 
 ### Security assumptions that are weak
@@ -96,7 +96,7 @@ It is not yet fit for high-confidence adjudication of booking or payment correct
 
 - Restrict proxy CORS to expected origins and stop blind authorization relay.
 - Remove plaintext secret persistence or force a conspicuous risk acceptance path.
-- Add `gitnexus-web` package-level tests and a CI lane that actually executes them.
+- Add `soleil-ai-review-engine-web` package-level tests and a CI lane that actually executes them.
 - Harden backend-mode query construction with allowlists or parameterization.
 - Preserve raw execution artifacts for future adjudication instead of only summary prose.
 
@@ -201,7 +201,7 @@ No alerting, replay tooling, webhook dead-letter handling, audit trail, or recon
 | Severity | HIGH |
 | Confidence | [CONFIRMED] |
 | Domain | Tool Operational Safety |
-| Entry / Boundary / Sink | Arbitrary browser origin -> `gitnexus-web/api/proxy.ts` -> GitHub with forwarded `Authorization` |
+| Entry / Boundary / Sink | Arbitrary browser origin -> `soleil-ai-review-engine-web/api/proxy.ts` -> GitHub with forwarded `Authorization` |
 | Business consequence | Any website can use the deployed proxy, and any stolen GitHub token presented by the browser can be relayed through it, expanding abuse and attribution risk. |
 | Remediation | Replace wildcard CORS with an allowlist of trusted origins, forward `Authorization` only when the caller origin is trusted, and add rate limiting. |
 | Status | Open |
@@ -214,7 +214,7 @@ No alerting, replay tooling, webhook dead-letter handling, audit trail, or recon
 | Severity | HIGH |
 | Confidence | [CONFIRMED] |
 | Domain | Tool Operational Safety |
-| Entry / Boundary / Sink | Browser UI -> `gitnexus-llm-settings` in `localStorage` -> direct provider credential use |
+| Entry / Boundary / Sink | Browser UI -> `soleil-ai-review-engine-llm-settings` in `localStorage` -> direct provider credential use |
 | Business consequence | Browser compromise, XSS, or extension access exposes billable API keys and any downstream provider access they grant. |
 | Remediation | Stop persisting provider API keys by default or encrypt them behind a user passphrase; at minimum, require explicit risk acknowledgment in the UI. |
 | Status | Open |
@@ -255,9 +255,9 @@ No alerting, replay tooling, webhook dead-letter handling, audit trail, or recon
 | Severity | MEDIUM |
 | Confidence | [CONFIRMED] |
 | Domain | Tool Operational Safety |
-| Entry / Boundary / Sink | Code change -> `gitnexus-web` package -> release/build without package-specific tests or CI |
+| Entry / Boundary / Sink | Code change -> `soleil-ai-review-engine-web` package -> release/build without package-specific tests or CI |
 | Business consequence | The tool can regress silently, which is especially risky when leadership treats its output as security evidence. |
-| Remediation | Add `gitnexus-web` package-local `test`, `lint`, `typecheck`, and CI execution wired to the package directory rather than relying on monorepo gates for other components. |
+| Remediation | Add `soleil-ai-review-engine-web` package-local `test`, `lint`, `typecheck`, and CI execution wired to the package directory rather than relying on monorepo gates for other components. |
 | Status | Open |
 
 #### GNW-004
@@ -383,9 +383,9 @@ Current confidence: [STRONG INFERENCE] that the design intent is sound; [WEAK IN
 
 ## 8. Graph-Derived Insights
 
-Graph-first review was materially useful on the tool itself. Even without a live graph export, the available review docs plus source topology quickly converge on three `gitnexus-web` chokepoints: `src/hooks/useAppState.tsx`, `src/core/llm/tools.ts`, and `src/workers/ingestion.worker.ts` [CONFIRMED]. Those are the files where correctness, performance, and future regression risk concentrate.
+Graph-first review was materially useful on the tool itself. Even without a live graph export, the available review docs plus source topology quickly converge on three `soleil-ai-review-engine-web` chokepoints: `src/hooks/useAppState.tsx`, `src/core/llm/tools.ts`, and `src/workers/ingestion.worker.ts` [CONFIRMED]. Those are the files where correctness, performance, and future regression risk concentrate.
 
-For SOLEIL, the prompt reports a 3937-node / 10238-edge graph and mentions high-degree test nodes such as `TestCase` and `StripeWebhookHandlerTest` [WEAK INFERENCE]. If accurate, that is exactly the kind of graph signal that usefully points a reviewer toward webhook and booking chokepoints. But without `GRAPH_EVIDENCE_MAP.md`, live `gitnexus://` resources, or the underlying repo, I cannot independently rely on node degree, execution-flow membership, or blast-radius rankings [NOT VERIFIED].
+For SOLEIL, the prompt reports a 3937-node / 10238-edge graph and mentions high-degree test nodes such as `TestCase` and `StripeWebhookHandlerTest` [WEAK INFERENCE]. If accurate, that is exactly the kind of graph signal that usefully points a reviewer toward webhook and booking chokepoints. But without `GRAPH_EVIDENCE_MAP.md`, live `soleil-ai-review-engine://` resources, or the underlying repo, I cannot independently rely on node degree, execution-flow membership, or blast-radius rankings [NOT VERIFIED].
 
 The key limitation of graph-first analysis is the same one surfaced here: clean structure can hide runtime races. Graphs are excellent at surfacing where to look; they are weaker at proving transaction semantics, timing behavior, and business invariants unless paired with raw tests and source.
 
@@ -395,11 +395,11 @@ The key limitation of graph-first analysis is the same one surfaced here: clean 
 
 - The entire cited SOLEIL artifact set is missing from this workspace.
 - No SOLEIL source files or raw targeted test output were available.
-- No live GitNexus MCP graph queries were available to re-check prior graph claims.
-- `gitnexus-web` findings are materially stronger than SOLEIL findings because they were cross-checked directly against source.
+- No live soleil-ai-review-engine MCP graph queries were available to re-check prior graph claims.
+- `soleil-ai-review-engine-web` findings are materially stronger than SOLEIL findings because they were cross-checked directly against source.
 - A structurally coherent graph or architecture map can create false confidence around race conditions; that risk is highest in booking/payment flows.
 - Contradictions resolved:
-  the repo is not globally CI-free, but `gitnexus-web` has no package-specific verification lane.
+  the repo is not globally CI-free, but `soleil-ai-review-engine-web` has no package-specific verification lane.
   `ErrorBoundary` and provider memoization were real prior issues and are now fixed.
   package-manager ambiguity is only partially fixed because the unused lockfile still remains.
 
@@ -443,11 +443,11 @@ Objective: ensure future sweeps carry raw evidence instead of summary-only confi
 
 Finding IDs: SHS-001, SHS-003, SHS-004, SHS-005, GNW-003
 
-Completion criteria: persisted raw test output for critical suites, webhook/audit logging sufficient for reconciliation, and automated `gitnexus-web` validation in CI.
+Completion criteria: persisted raw test output for critical suites, webhook/audit logging sufficient for reconciliation, and automated `soleil-ai-review-engine-web` validation in CI.
 
 Residual risk: evidence quality improves, but design flaws still need actual fixes.
 
-### Batch 4 - gitnexus-web tool hardening
+### Batch 4 - soleil-ai-review-engine-web tool hardening
 
 Objective: make the analysis surface safer before expanding it to higher-sensitivity repos.
 
@@ -463,11 +463,11 @@ Residual risk: browser-only execution remains a deliberate tradeoff and should s
 
 1. Should leadership act on this sweep now, or is confidence too low?
 
-Act now on the `gitnexus-web` hardening items and on a targeted SOLEIL booking/payment re-check. Confidence is high enough for prioritization, not high enough for a blanket security sign-off on SOLEIL.
+Act now on the `soleil-ai-review-engine-web` hardening items and on a targeted SOLEIL booking/payment re-check. Confidence is high enough for prioritization, not high enough for a blanket security sign-off on SOLEIL.
 
 2. What must be fixed before expanding scope to other systems?
 
-`gitnexus-web` needs origin-restricted proxying, safer secret handling, and a package-specific verification lane. Future sweeps also need raw evidence retention, not just summaries.
+`soleil-ai-review-engine-web` needs origin-restricted proxying, safer secret handling, and a package-specific verification lane. Future sweeps also need raw evidence retention, not just summaries.
 
 3. Is a deeper targeted review needed - and exactly where?
 
@@ -487,7 +487,7 @@ No original SOLEIL finding IDs were available in the workspace artifacts. SOLEIL
 | N/A (prompt: auth middleware + tests summary) | Added | SHS-004 | No SOLEIL backlog artifact was available; route alignment remains unverified. |
 | N/A (prompt: RBAC test summary) | Added | SHS-005 | No SOLEIL backlog artifact was available; role coverage remains partial. |
 | GNWEB-001 | Merged / downgraded | GNW-003 | Absence of tests matters, but not at CRITICAL severity and not without pairing it to package-level verification. |
-| GNWEB-002 | Merged / downgraded | GNW-003 | Monorepo CI exists; the real issue is lack of `gitnexus-web`-specific gating. |
+| GNWEB-002 | Merged / downgraded | GNW-003 | Monorepo CI exists; the real issue is lack of `soleil-ai-review-engine-web`-specific gating. |
 | GNWEB-003 | Carried forward | GNW-004 | Still a confirmed architectural chokepoint. |
 | GNWEB-004 | Carried forward | GNW-002 | Renamed around concrete credential-exposure consequence. |
 | GNWEB-005 | Carried forward / fixed | GNW-007 | Correct finding, now fixed in Batch 0. |
@@ -518,7 +518,7 @@ No original SOLEIL finding IDs were available in the workspace artifacts. SOLEIL
 ## Appendix B - Severity Adjudication Notes
 
 - GNWEB-001: CRITICAL -> MEDIUM as GNW-003 because missing tests create false confidence, but do not by themselves create a direct integrity or compromise path.
-- GNWEB-002: CRITICAL -> MEDIUM as GNW-003 because monorepo CI exists; the adjudicated issue is missing `gitnexus-web` package coverage, not total absence of CI.
+- GNWEB-002: CRITICAL -> MEDIUM as GNW-003 because monorepo CI exists; the adjudicated issue is missing `soleil-ai-review-engine-web` package coverage, not total absence of CI.
 - GNWEB-005: HIGH -> MEDIUM as GNW-007 because the finding was valid but is already fixed in Batch 0.
 - GNWEB-006: HIGH -> MEDIUM as GNW-006 because the remaining risk is determinism/operability, not a direct security failure.
 - GNWEB-009: HIGH -> MEDIUM as GNW-008 because the finding was valid but is already fixed in Batch 0.

@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: ./.github/actions/setup-gitnexus
+      - uses: ./.github/actions/setup-soleil-ai-review-engine
 
       - name: Run unit tests with coverage
         run: >-
@@ -24,7 +24,7 @@ jobs:
           --coverage.reporter=text
           --coverage.thresholdAutoUpdate=false
           --coverage.reportOnFailure=true
-        working-directory: gitnexus
+        working-directory: soleil-ai-review-engine
 
       - name: Upload test reports
         if: always()
@@ -32,9 +32,9 @@ jobs:
         with:
           name: test-reports
           path: |
-            gitnexus/coverage/coverage-summary.json
-            gitnexus/coverage/coverage-final.json
-            gitnexus/test-results.json
+            soleil-ai-review-engine/coverage/coverage-summary.json
+            soleil-ai-review-engine/coverage/coverage-final.json
+            soleil-ai-review-engine/test-results.json
           retention-days: 5
 
   cross-platform:
@@ -48,6 +48,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: ./.github/actions/setup-gitnexus
+      - uses: ./.github/actions/setup-soleil-ai-review-engine
       - run: npx vitest run test/unit
-        working-directory: gitnexus
+        working-directory: soleil-ai-review-engine

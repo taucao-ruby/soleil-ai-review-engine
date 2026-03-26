@@ -1,7 +1,7 @@
 [project]
-name = "gitnexus-swebench-eval"
+name = "soleil-ai-review-engine-swebench-eval"
 version = "0.1.0"
-description = "SWE-bench evaluation harness with GitNexus code intelligence integration"
+description = "SWE-bench evaluation harness with soleil-ai-review-engine code intelligence integration"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -23,8 +23,8 @@ dev = [
 ]
 
 [project.scripts]
-gitnexus-eval = "run_eval:app"
-gitnexus-eval-analyze = "analysis.analyze_results:app"
+soleil-ai-review-engine-eval = "run_eval:app"
+soleil-ai-review-engine-eval-analyze = "analysis.analyze_results:app"
 
 [build-system]
 requires = ["hatchling"]

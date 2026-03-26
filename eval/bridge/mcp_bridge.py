@@ -1,7 +1,7 @@
 """
-MCP Bridge for GitNexus
+MCP Bridge for soleil-ai-review-engine
 
-Starts the GitNexus MCP server as a subprocess and provides a Python interface
+Starts the soleil-ai-review-engine MCP server as a subprocess and provides a Python interface
 to call MCP tools. Used by the bash wrapper scripts and the augmentation layer.
 
 The bridge communicates with the MCP server via stdio using the JSON-RPC protocol.
@@ -22,7 +22,7 @@ logger = logging.getLogger("mcp_bridge")
 
 class MCPBridge:
     """
-    Manages a GitNexus MCP server subprocess and proxies tool calls to it.
+    Manages a soleil-ai-review-engine MCP server subprocess and proxies tool calls to it.
     
     Usage:
         bridge = MCPBridge(repo_path="/path/to/repo")
@@ -39,19 +39,19 @@ class MCPBridge:
         self._started = False
 
     def start(self) -> bool:
-        """Start the GitNexus MCP server subprocess."""
+        """Start the soleil-ai-review-engine MCP server subprocess."""
         if self._started:
             return True
 
         try:
-            # Find gitnexus binary
-            gitnexus_bin = self._find_gitnexus()
-            if not gitnexus_bin:
-                logger.error("GitNexus not found. Install with: npm install -g gitnexus")
+            # Find soleil-ai-review-engine binary
+            soleil-ai-review-engine_bin = self._find_soleil-ai-review-engine()
+            if not soleil-ai-review-engine_bin:
+                logger.error("soleil-ai-review-engine not found. Install with: npm install -g soleil-ai-review-engine")
                 return False
 
             self.process = subprocess.Popen(
-                [gitnexus_bin, "mcp"],
+                [soleil-ai-review-engine_bin, "mcp"],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -63,7 +63,7 @@ class MCPBridge:
             init_result = self._send_request("initialize", {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {},
-                "clientInfo": {"name": "gitnexus-eval", "version": "0.1.0"},
+                "clientInfo": {"name": "soleil-ai-review-engine-eval", "version": "0.1.0"},
             })
 
             if init_result is None:
@@ -99,7 +99,7 @@ class MCPBridge:
 
     def call_tool(self, tool_name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any] | None:
         """
-        Call a GitNexus MCP tool and return the result.
+        Call a soleil-ai-review-engine MCP tool and return the result.
         
         Returns the tool result content or None on error.
         """
@@ -139,29 +139,29 @@ class MCPBridge:
                 return contents[0].get("text", "")
         return None
 
-    def _find_gitnexus(self) -> str | None:
-        """Find the gitnexus CLI binary."""
+    def _find_soleil-ai-review-engine(self) -> str | None:
+        """Find the soleil-ai-review-engine CLI binary."""
         # Check if npx is available (preferred - uses local install)
         for cmd in ["npx"]:
             try:
                 result = subprocess.run(
-                    [cmd, "gitnexus", "--version"],
+                    [cmd, "soleil-ai-review-engine", "--version"],
                     capture_output=True, text=True, timeout=15,
                     cwd=self.repo_path,
                 )
                 if result.returncode == 0:
-                    return cmd  # Will use "npx gitnexus mcp"
+                    return cmd  # Will use "npx soleil-ai-review-engine mcp"
             except Exception:
                 continue
 
         # Check for global install
         try:
             result = subprocess.run(
-                ["gitnexus", "--version"],
+                ["soleil-ai-review-engine", "--version"],
                 capture_output=True, text=True, timeout=10,
             )
             if result.returncode == 0:
-                return "gitnexus"
+                return "soleil-ai-review-engine"
         except Exception:
             pass
 
@@ -298,7 +298,7 @@ class MCPToolCLI:
             args = self._parse_simple_args(args_json)
 
         if not self.bridge.start():
-            print("ERROR: Failed to start GitNexus MCP bridge", file=sys.stderr)
+            print("ERROR: Failed to start soleil-ai-review-engine MCP bridge", file=sys.stderr)
             return 1
 
         try:

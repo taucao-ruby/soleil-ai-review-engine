@@ -19,7 +19,7 @@ concurrency:
 #   ci-unit-tests.yml    — unit tests with coverage + cross-platform
 #   ci-integration.yml   — integration test matrix (3 OS x 4 groups)
 #
-# Shared setup is DRY via .github/actions/setup-gitnexus composite action.
+# Shared setup is DRY via .github/actions/setup-soleil-ai-review-engine composite action.
 
 jobs:
   quality:

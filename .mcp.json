@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "gitnexus": {
+    "soleil-ai-review-engine": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "gitnexus@latest", "mcp"]
+      "args": ["-y", "soleil-ai-review-engine@latest", "mcp"]
     }
   }
 }

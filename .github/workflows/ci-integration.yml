@@ -69,7 +69,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: ./.github/actions/setup-gitnexus
+      - uses: ./.github/actions/setup-soleil-ai-review-engine
         with:
           build: 'true'
 
@@ -78,7 +78,7 @@ jobs:
       # is the only reliable fix boundary.
       - name: Run integration tests — lbug-db (process-isolated)
         if: matrix.test-group == 'lbug-db'
-        working-directory: gitnexus
+        working-directory: soleil-ai-review-engine
         shell: bash
         run: |
           set -e
@@ -109,7 +109,7 @@ jobs:
         env:
           TEST_GLOB: ${{ matrix.test-glob }}
         run: npx vitest run --reporter=verbose $TEST_GLOB
-        working-directory: gitnexus
+        working-directory: soleil-ai-review-engine
 
   # ── Coverage collection (ubuntu only) ─────────────────────────────────
   # Runs non-lbug integration tests with coverage enabled so the PR report
@@ -123,12 +123,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: ./.github/actions/setup-gitnexus
+      - uses: ./.github/actions/setup-soleil-ai-review-engine
         with:
           build: 'true'
 
       - name: Run integration tests with coverage
-        working-directory: gitnexus
+        working-directory: soleil-ai-review-engine
         run: >-
           npx vitest run
           --reporter=default
@@ -172,9 +172,9 @@ jobs:
         with:
           name: integration-reports
           path: |
-            gitnexus/coverage/coverage-summary.json
-            gitnexus/coverage/coverage-final.json
-            gitnexus/integration-results.json
+            soleil-ai-review-engine/coverage/coverage-summary.json
+            soleil-ai-review-engine/coverage/coverage-final.json
+            soleil-ai-review-engine/integration-results.json
           retention-days: 5
 
   # ── Unified status gate ──────────────────────────────────────────────
