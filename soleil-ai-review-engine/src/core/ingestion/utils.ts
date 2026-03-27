@@ -918,6 +918,25 @@ export const extractReceiverName = (
     if (func?.text === 'super') return 'super';
   }
 
+  // PHP: $this->property->method() — DI property chain resolution.
+  // e.g. $this->bookingService->create() has receiver = member_access_expression
+  // ($this->bookingService). SIMPLE_RECEIVER_TYPES rejects it, but the TypeEnv
+  // already holds '$bookingService → BookingService' from the property_declaration.
+  // Return '$propName' so the normal TypeEnv.lookup path resolves the property type.
+  // '$this' prefix is PHP-specific — distinguishes from C# 'this.property' which
+  // uses identifier type for 'this' and is already handled by SIMPLE_RECEIVER_TYPES.
+  // Also handles nullsafe: $this?->property->method() (PHP 8).
+  if (receiver.type === 'member_access_expression' || receiver.type === 'nullsafe_member_access_expression') {
+    const base = receiver.childForFieldName('object');
+    const prop = receiver.childForFieldName('name');
+    if (base && prop) {
+      const baseText = base.text;
+      if (baseText === '$this' || baseText === 'self' || baseText === 'static') {
+        return '$' + prop.text;
+      }
+    }
+  }
+
   return undefined;
 };
 
