@@ -15,6 +15,9 @@ import { getGlobalDir } from '../storage/repo-manager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const CLI_COMMAND = 'soleil';
+const NPM_PACKAGE = 'soleil-engine-cli';
+const MCP_SERVER_NAME = 'soleil-ai-review-engine';
 
 interface SetupResult {
   configured: string[];
@@ -30,12 +33,12 @@ function getMcpEntry() {
   if (process.platform === 'win32') {
     return {
       command: 'cmd',
-      args: ['/c', 'npx', '-y', 'soleil-ai-review-engine@latest', 'mcp'],
+      args: ['/c', 'npx', '-y', `${NPM_PACKAGE}@latest`, 'mcp'],
     };
   }
   return {
     command: 'npx',
-    args: ['-y', 'soleil-ai-review-engine@latest', 'mcp'],
+    args: ['-y', `${NPM_PACKAGE}@latest`, 'mcp'],
   };
 }
 
@@ -50,7 +53,7 @@ function mergeMcpConfig(existing: any): any {
   if (!existing.mcpServers || typeof existing.mcpServers !== 'object') {
     existing.mcpServers = {};
   }
-  existing.mcpServers.soleil-ai-review-engine = getMcpEntry();
+  existing.mcpServers[MCP_SERVER_NAME] = getMcpEntry();
   return existing;
 }
 
@@ -119,7 +122,7 @@ async function setupClaudeCode(result: SetupResult): Promise<void> {
   console.log('');
   console.log('  Claude Code detected. Run this command to add soleil-ai-review-engine MCP:');
   console.log('');
-  console.log('    claude mcp add soleil-ai-review-engine -- npx -y soleil-ai-review-engine mcp');
+  console.log(`    claude mcp add ${MCP_SERVER_NAME} -- npx -y ${NPM_PACKAGE} mcp`);
   console.log('');
   result.configured.push('Claude Code (MCP manual step printed)');
 }
@@ -231,7 +234,7 @@ async function setupOpenCode(result: SetupResult): Promise<void> {
     const existing = await readJsonFile(configPath);
     const config = existing || {};
     if (!config.mcp) config.mcp = {};
-    config.mcp.soleil-ai-review-engine = getMcpEntry();
+    config.mcp[MCP_SERVER_NAME] = getMcpEntry();
     await writeJsonFile(configPath, config);
     result.configured.push('OpenCode');
   } catch (err: any) {
@@ -413,7 +416,7 @@ export const setupCommand = async () => {
   console.log('');
   console.log('  Next steps:');
   console.log('    1. cd into any git repo');
-  console.log('    2. Run: soleil-ai-review-engine analyze');
+  console.log(`    2. Run: ${CLI_COMMAND} analyze`);
   console.log('    3. Open the repo in your editor — MCP is ready!');
   console.log('');
 };

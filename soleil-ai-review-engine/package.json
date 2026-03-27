@@ -1,5 +1,5 @@
 {
-  "name": "soleil-ai-review-engine",
+  "name": "soleil-engine-cli",
   "version": "1.4.0",
   "description": "Graph-powered code intelligence for AI agents. Index any codebase, query via MCP or CLI.",
   "author": "Abhigyan Patwari",
@@ -26,7 +26,10 @@
     "codebase-indexing"
   ],
   "type": "module",
+  "main": "dist/cli/index.js",
   "bin": {
+    "soleil": "dist/cli/index.js",
+    "gitnexus": "dist/cli/index.js",
     "soleil-ai-review-engine": "dist/cli/index.js"
   },
   "files": [

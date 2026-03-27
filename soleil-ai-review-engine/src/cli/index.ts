@@ -5,15 +5,26 @@
 
 import { Command } from 'commander';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 import { createLazyAction } from './lazy-action.js';
+
+const CLI_COMMAND = 'soleil';
+const LEGACY_COMMANDS = new Set(['gitnexus', 'soleil-ai-review-engine']);
+const invokedCommand = process.argv[1]
+  ? path.basename(process.argv[1], path.extname(process.argv[1]))
+  : CLI_COMMAND;
+
+if (LEGACY_COMMANDS.has(invokedCommand)) {
+  console.warn(`[deprecated] '${invokedCommand}' will be removed in v2.0. Use '${CLI_COMMAND}' instead.`);
+}
 
 const _require = createRequire(import.meta.url);
 const pkg = _require('../../package.json');
 const program = new Command();
 
 program
-  .name('soleil-ai-review-engine')
-  .description('soleil-ai-review-engine local CLI and MCP server')
+  .name(CLI_COMMAND)
+  .description('Soleil Engine CLI and MCP server')
   .version(pkg.version);
 
 program
@@ -121,5 +132,7 @@ program
   .option('-p, --port <port>', 'Port number', '4848')
   .option('--idle-timeout <seconds>', 'Auto-shutdown after N seconds idle (0 = disabled)', '0')
   .action(createLazyAction(() => import('./eval-server.js'), 'evalServerCommand'));
+
+program.addHelpText('after', '\nLegacy aliases: gitnexus, soleil-ai-review-engine (deprecated; removal target: v2.0).');
 
 program.parse(process.argv);

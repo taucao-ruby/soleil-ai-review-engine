@@ -10,10 +10,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { type GeneratedSkillInfo } from './skill-gen.js';
+import type { SkillPack } from '../skills/skill-pack.js';
 
 // ESM equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const CLI_COMMAND = 'soleil';
+const NPM_PACKAGE = 'soleil-engine-cli';
 
 interface RepoStats {
   files?: number;
@@ -38,7 +41,7 @@ const SOLEIL_AI_REVIEW_ENGINE_END_MARKER = '<!-- soleil-ai-review-engine:end -->
  * - Exact tool commands with parameters — vague directives get ignored
  * - Self-review checklist — forces model to verify its own work
  */
-function generatesoleil-ai-review-engineContent(projectName: string, stats: RepoStats, generatedSkills?: GeneratedSkillInfo[]): string {
+function generateSoleilAiReviewEngineContent(projectName: string, stats: RepoStats, generatedSkills?: GeneratedSkillInfo[]): string {
   const generatedRows = (generatedSkills && generatedSkills.length > 0)
     ? generatedSkills.map(s =>
         `| Work in the ${s.label} area (${s.symbolCount} symbols) | \`.claude/skills/generated/${s.name}/SKILL.md\` |`
@@ -59,7 +62,7 @@ function generatesoleil-ai-review-engineContent(projectName: string, stats: Repo
 
 This project is indexed by soleil-ai-review-engine as **${projectName}** (${stats.nodes || 0} symbols, ${stats.edges || 0} relationships, ${stats.processes || 0} execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
 
-> If any soleil-ai-review-engine tool warns the index is stale, run \`npx soleil-ai-review-engine analyze\` in terminal first.
+> If any soleil-ai-review-engine tool warns the index is stale, run \`npx ${NPM_PACKAGE} analyze\` in terminal first.
 
 ## Always Do
 
@@ -130,13 +133,13 @@ Before completing any code modification task, verify:
 After committing code changes, the soleil-ai-review-engine index becomes stale. Re-run analyze to update it:
 
 \`\`\`bash
-npx soleil-ai-review-engine analyze
+npx ${NPM_PACKAGE} analyze
 \`\`\`
 
 If the index previously included embeddings, preserve them by adding \`--embeddings\`:
 
 \`\`\`bash
-npx soleil-ai-review-engine analyze --embeddings
+npx ${NPM_PACKAGE} analyze --embeddings
 \`\`\`
 
 To check whether embeddings exist, inspect \`.soleil-ai-review-engine/meta.json\` — the \`stats.embeddings\` field shows the count (0 means no embeddings). **Running analyze without \`--embeddings\` will delete any previously generated embeddings.**
@@ -169,7 +172,7 @@ async function fileExists(filePath: string): Promise<boolean> {
  * - If file exists without soleil-ai-review-engine section: append
  * - If file exists with soleil-ai-review-engine section: replace that section
  */
-async function upsertsoleil-ai-review-engineSection(
+async function upsertSoleilAiReviewEngineSection(
   filePath: string,
   content: string
 ): Promise<'created' | 'updated' | 'appended'> {
@@ -210,30 +213,36 @@ async function installSkills(repoPath: string): Promise<string[]> {
   const installedSkills: string[] = [];
 
   // Skill definitions bundled with the package
-  const skills = [
+  const skills: SkillPack['skills'] = [
     {
       name: 'soleil-ai-review-engine-exploring',
       description: 'Use when the user asks how code works, wants to understand architecture, trace execution flows, or explore unfamiliar parts of the codebase. Examples: "How does X work?", "What calls this function?", "Show me the auth flow"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-exploring.md' },
     },
     {
       name: 'soleil-ai-review-engine-debugging',
       description: 'Use when the user is debugging a bug, tracing an error, or asking why something fails. Examples: "Why is X failing?", "Where does this error come from?", "Trace this bug"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-debugging.md' },
     },
     {
       name: 'soleil-ai-review-engine-impact-analysis',
       description: 'Use when the user wants to know what will break if they change something, or needs safety analysis before editing code. Examples: "Is it safe to change X?", "What depends on this?", "What will break?"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-impact-analysis.md' },
     },
     {
       name: 'soleil-ai-review-engine-refactoring',
       description: 'Use when the user wants to rename, extract, split, move, or restructure code safely. Examples: "Rename this function", "Extract this into a module", "Refactor this class", "Move this to a separate file"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-refactoring.md' },
     },
     {
       name: 'soleil-ai-review-engine-guide',
       description: 'Use when the user asks about soleil-ai-review-engine itself — available tools, how to query the knowledge graph, MCP resources, graph schema, or workflow reference. Examples: "What soleil-ai-review-engine tools are available?", "How do I use soleil-ai-review-engine?"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-guide.md' },
     },
     {
       name: 'soleil-ai-review-engine-cli',
       description: 'Use when the user needs to run soleil-ai-review-engine CLI commands like analyze/index a repo, check status, clean the index, generate a wiki, or list indexed repos. Examples: "Index this repo", "Reanalyze the codebase", "Generate a wiki"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-cli.md' },
     },
   ];
 
@@ -246,7 +255,7 @@ async function installSkills(repoPath: string): Promise<string[]> {
       await fs.mkdir(skillDir, { recursive: true });
 
       // Try to read from package skills directory
-      const packageSkillPath = path.join(__dirname, '..', '..', 'skills', `${skill.name}.md`);
+      const packageSkillPath = path.join(__dirname, '..', '..', 'skills', skill.source.relativePath);
       let skillContent: string;
 
       try {
@@ -287,17 +296,17 @@ export async function generateAIContextFiles(
   stats: RepoStats,
   generatedSkills?: GeneratedSkillInfo[]
 ): Promise<{ files: string[] }> {
-  const content = generatesoleil-ai-review-engineContent(projectName, stats, generatedSkills);
+  const content = generateSoleilAiReviewEngineContent(projectName, stats, generatedSkills);
   const createdFiles: string[] = [];
 
   // Create AGENTS.md (standard for Cursor, Windsurf, OpenCode, Cline, etc.)
   const agentsPath = path.join(repoPath, 'AGENTS.md');
-  const agentsResult = await upsertsoleil-ai-review-engineSection(agentsPath, content);
+  const agentsResult = await upsertSoleilAiReviewEngineSection(agentsPath, content);
   createdFiles.push(`AGENTS.md (${agentsResult})`);
 
   // Create CLAUDE.md (for Claude Code)
   const claudePath = path.join(repoPath, 'CLAUDE.md');
-  const claudeResult = await upsertsoleil-ai-review-engineSection(claudePath, content);
+  const claudeResult = await upsertSoleilAiReviewEngineSection(claudePath, content);
   createdFiles.push(`CLAUDE.md (${claudeResult})`);
 
   // Install skills to .claude/skills/soleil-ai-review-engine/
@@ -308,4 +317,3 @@ export async function generateAIContextFiles(
 
   return { files: createdFiles };
 }
-

@@ -114,6 +114,7 @@ export const analyzeCommand = async (
 
   if (existingMeta && !options?.force && !options?.skills && existingMeta.lastCommit === currentCommit) {
     console.log('  Already up to date\n');
+    await registerRepo(repoPath, existingMeta);
     return;
   }
 

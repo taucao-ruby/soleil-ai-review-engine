@@ -1,5 +1,0 @@
-.vercel
-.env*.local
-.soleil-ai-review-engine
-node_modules/
-dist/

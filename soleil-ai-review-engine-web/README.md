@@ -18,6 +18,12 @@ pnpm run dev        # http://localhost:5173
 The local dev server is Vite.
 The proxy endpoint is used only for GitHub-backed clone flows that need controlled cross-origin access.
 
+## Local Port Model
+
+- Vite dev server: `http://localhost:5173`
+- Engine HTTP server: `http://127.0.0.1:4747` via `soleil serve --port 4747`
+- When the UI asks for a server URL, use the engine server on `4747`, not the Vite dev server on `5173`
+
 ## Available Scripts
 
 | Script | Command | Purpose |
