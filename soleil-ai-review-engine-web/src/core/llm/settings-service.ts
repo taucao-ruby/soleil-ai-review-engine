@@ -312,10 +312,13 @@ export const getActiveProviderConfig = (): ProviderConfig | null => {
       if (!settings.openrouter?.apiKey || settings.openrouter.apiKey.trim() === '') {
         return null;
       }
+      if (!settings.openrouter.model || settings.openrouter.model.trim() === '') {
+        return null;
+      }
       return {
         provider: 'openrouter',
         apiKey: settings.openrouter.apiKey,
-        model: settings.openrouter.model || '',
+        model: settings.openrouter.model,
         baseUrl: settings.openrouter.baseUrl || 'https://openrouter.ai/api/v1',
         temperature: settings.openrouter.temperature,
         maxTokens: settings.openrouter.maxTokens,

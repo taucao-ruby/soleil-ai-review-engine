@@ -155,7 +155,8 @@ interface AppState {
 
   // LLM methods
   refreshLLMSettings: () => void;
-  initializeAgent: (overrideProjectName?: string) => Promise<void>;
+  initializeAgent: (overrideProjectName?: string) => Promise<boolean>;
+  initializeBackendAgent: (backendUrl: string, repoName: string, fileContents: Map<string, string>, overrideProjectName?: string) => Promise<boolean>;
   sendChatMessage: (message: string) => Promise<void>;
   stopChatResponse: () => void;
   clearChat: () => void;
@@ -565,17 +566,17 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     setLLMSettings(loadSettings());
   }, []);
 
-  const initializeAgent = useCallback(async (overrideProjectName?: string): Promise<void> => {
+  const initializeAgent = useCallback(async (overrideProjectName?: string): Promise<boolean> => {
     const api = apiRef.current;
     if (!api) {
       setAgentError('Worker not initialized');
-      return;
+      return false;
     }
 
     const config = getActiveProviderConfig();
     if (!config) {
       setAgentError('Please configure an LLM provider in settings');
-      return;
+      return false;
     }
 
     setIsAgentInitializing(true);
@@ -591,14 +592,65 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
         if (import.meta.env.DEV) {
           console.log('✅ Agent initialized successfully');
         }
+        return true;
       } else {
         setAgentError(result.error ?? 'Failed to initialize agent');
         setIsAgentReady(false);
+        return false;
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setAgentError(message);
       setIsAgentReady(false);
+      return false;
+    } finally {
+      setIsAgentInitializing(false);
+    }
+  }, [projectName]);
+
+  const initializeBackendAgent = useCallback(async (
+    backendUrl: string,
+    repoName: string,
+    fileContents: Map<string, string>,
+    overrideProjectName?: string,
+  ): Promise<boolean> => {
+    const api = apiRef.current;
+    if (!api) {
+      setAgentError('Worker not initialized');
+      return false;
+    }
+
+    const config = getActiveProviderConfig();
+    if (!config) {
+      setAgentError('Please configure an LLM provider in settings');
+      return false;
+    }
+
+    setIsAgentInitializing(true);
+    setAgentError(null);
+
+    try {
+      const effectiveProjectName = overrideProjectName || projectName || 'project';
+      // Comlink cannot transfer Map objects — serialise to entries array
+      const fileContentsEntries = Array.from(fileContents.entries()) as [string, string][];
+      const result = await api.initializeBackendAgent(config, backendUrl, repoName, fileContentsEntries, effectiveProjectName);
+      if (result.success) {
+        setIsAgentReady(true);
+        setAgentError(null);
+        if (import.meta.env.DEV) {
+          console.log('✅ Backend agent initialized successfully');
+        }
+        return true;
+      } else {
+        setAgentError(result.error ?? 'Failed to initialize backend agent');
+        setIsAgentReady(false);
+        return false;
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setAgentError(message);
+      setIsAgentReady(false);
+      return false;
     } finally {
       setIsAgentInitializing(false);
     }
@@ -617,9 +669,11 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     clearAIToolHighlights();
 
     if (!isAgentReady) {
-      // Try to initialize first
-      await initializeAgent();
-      if (!apiRef.current) return;
+      // Try to initialize. initializeAgent() returns false if no provider is
+      // configured OR if the worker/DB init fails — both cases must stop here
+      // to prevent chatStream being called with currentAgent === null.
+      const initialized = await initializeAgent();
+      if (!initialized) return;
     }
 
     // Add user message
@@ -1019,7 +1073,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
       setViewMode('exploring');
 
-      if (getActiveProviderConfig()) initializeAgent(pName);
+      if (getActiveProviderConfig()) initializeBackendAgent(serverBaseUrl, repoName, fileMap, pName);
 
       startEmbeddings().catch((err) => {
         if (err?.name === 'WebGPUNotAvailableError' || err?.message?.includes('WebGPU')) {
@@ -1037,7 +1091,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       });
       setTimeout(() => { setViewMode('exploring'); setProgress(null); }, 3000);
     }
-  }, [serverBaseUrl, setProgress, setViewMode, setProjectName, setGraph, setFileContents, initializeAgent, startEmbeddings, setHighlightedNodeIds, clearAIToolHighlights, clearBlastRadius, setSelectedNode, setQueryResult, setCodeReferences, setCodePanelOpen, setCodeReferenceFocus]);
+  }, [serverBaseUrl, setProgress, setViewMode, setProjectName, setGraph, setFileContents, initializeBackendAgent, startEmbeddings, setHighlightedNodeIds, clearAIToolHighlights, clearBlastRadius, setSelectedNode, setQueryResult, setCodeReferences, setCodePanelOpen, setCodeReferenceFocus]);
 
   const removeCodeReference = useCallback((id: string) => {
     setCodeReferences(prev => {
@@ -1166,6 +1220,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     // LLM methods
     refreshLLMSettings,
     initializeAgent,
+    initializeBackendAgent,
     sendChatMessage,
     stopChatResponse,
     clearChat,
@@ -1231,6 +1286,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     currentToolCalls,
     refreshLLMSettings,
     initializeAgent,
+    initializeBackendAgent,
     sendChatMessage,
     stopChatResponse,
     clearChat,

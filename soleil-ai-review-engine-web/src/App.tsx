@@ -31,6 +31,7 @@ const AppContent = () => {
     setSettingsPanelOpen,
     refreshLLMSettings,
     initializeAgent,
+    initializeBackendAgent,
     startEmbeddings,
     embeddingStatus,
     codeReferences,
@@ -133,11 +134,11 @@ const AppContent = () => {
     }
   }, [setViewMode, setGraph, setFileContents, setProgress, setProjectName, runPipelineFromFiles, startEmbeddings, initializeAgent]);
 
-  const handleServerConnect = useCallback((result: ConnectToServerResult) => {
+  const handleServerConnect = useCallback((result: ConnectToServerResult, backendUrl?: string) => {
     // Extract project name from repoPath
     const repoPath = result.repoInfo.repoPath;
-    const projectName = repoPath.split('/').pop() || 'server-project';
-    setProjectName(projectName);
+    const repoName = repoPath.split('/').pop() || 'server-project';
+    setProjectName(repoName);
 
     // Build KnowledgeGraph from server data (bypasses WASM pipeline entirely)
     const graph = createKnowledgeGraph();
@@ -159,9 +160,15 @@ const AppContent = () => {
     // Transition directly to exploring view
     setViewMode('exploring');
 
-    // Initialize agent if LLM is configured
+    // Initialize agent if LLM is configured.
+    // Server mode MUST use initializeBackendAgent (HTTP tools, no local lbug).
+    // Falling back to initializeAgent would call lbug which is never loaded in server mode.
     if (getActiveProviderConfig()) {
-      initializeAgent(projectName);
+      if (backendUrl) {
+        initializeBackendAgent(backendUrl, repoName, fileMap, repoName);
+      } else {
+        initializeAgent(repoName);
+      }
     }
 
     // Auto-start embeddings
@@ -172,7 +179,7 @@ const AppContent = () => {
         console.warn('Embeddings auto-start failed:', err);
       }
     });
-  }, [setViewMode, setGraph, setFileContents, setProjectName, initializeAgent, startEmbeddings]);
+  }, [setViewMode, setGraph, setFileContents, setProjectName, initializeAgent, initializeBackendAgent, startEmbeddings]);
 
   // Auto-connect when ?server query param is present (bookmarkable shortcut)
   const autoConnectRan = useRef(false);
@@ -204,7 +211,7 @@ const AppContent = () => {
         setProgress({ phase: 'extracting', percent: 97, message: 'Processing...', detail: 'Extracting file contents' });
       }
     }).then(async (result) => {
-      handleServerConnect(result);
+      handleServerConnect(result, baseUrl);
 
       // Store server URL and fetch available repos for the repo switcher
       setServerBaseUrl(baseUrl);
@@ -247,9 +254,9 @@ const AppContent = () => {
         onFileSelect={handleFileSelect}
         onGitClone={handleGitClone}
         onServerConnect={async (result, serverUrl) => {
-          handleServerConnect(result);
-          if (serverUrl) {
-            const baseUrl = normalizeServerUrl(serverUrl);
+          const baseUrl = serverUrl ? normalizeServerUrl(serverUrl) : undefined;
+          handleServerConnect(result, baseUrl);
+          if (baseUrl) {
             setServerBaseUrl(baseUrl);
             try {
               const repos = await fetchRepos(baseUrl);

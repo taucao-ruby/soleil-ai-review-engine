@@ -22,6 +22,7 @@ export const RightPanel = () => {
     agentError,
     isAgentReady,
     isAgentInitializing,
+    initializeAgent,
     sendChatMessage,
     stopChatResponse,
     clearChat,
@@ -180,7 +181,7 @@ export const RightPanel = () => {
 
   // Chat handlers
   const handleSendMessage = async () => {
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || !isProviderConfigured()) return;
     const text = chatInput.trim();
     setChatInput('');
     // Reset textarea height after sending
@@ -221,7 +222,7 @@ export const RightPanel = () => {
               }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Nexus AI</span>
+            <span>Soleil AI</span>
           </button>
 
           {/* Processes Tab */}
@@ -279,8 +280,15 @@ export const RightPanel = () => {
           {/* Status / errors */}
           {agentError && (
             <div className="px-4 py-3 bg-rose-500/10 border-b border-rose-500/30 text-rose-100 text-sm flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" />
-              <span>{agentError}</span>
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span className="flex-1">{agentError}</span>
+              <button
+                onClick={() => initializeAgent()}
+                disabled={isAgentInitializing}
+                className="shrink-0 px-2 py-0.5 rounded text-xs font-medium bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isAgentInitializing ? 'Retrying…' : 'Retry'}
+              </button>
             </div>
           )}
 
@@ -336,7 +344,7 @@ export const RightPanel = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-3">
                           <Sparkles className="w-4 h-4 text-accent" />
-                          <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Nexus AI</span>
+                          <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Soleil AI</span>
                           {isChatLoading && message === chatMessages[chatMessages.length - 1] && (
                             <Loader2 className="w-3 h-3 animate-spin text-accent" />
                           )}
@@ -423,7 +431,7 @@ export const RightPanel = () => {
               ) : (
                 <button
                   onClick={handleSendMessage}
-                  disabled={!chatInput.trim() || isAgentInitializing}
+                  disabled={!chatInput.trim() || isAgentInitializing || !isProviderConfigured()}
                   className="w-9 h-9 flex items-center justify-center bg-accent rounded-md text-white transition-all hover:bg-accent-dim disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-3.5 h-3.5" />
