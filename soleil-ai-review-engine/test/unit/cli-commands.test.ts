@@ -37,7 +37,7 @@ describe('CLI commands', () => {
     it('exposes soleil-ai-review-engine binary', async () => {
       const pkg = await import('../../package.json', { with: { type: 'json' } });
       expect(pkg.default.bin).toBeDefined();
-      expect(pkg.default.bin.soleil-ai-review-engine || pkg.default.bin).toBeDefined();
+      expect(pkg.default.bin['soleil-ai-review-engine'] || pkg.default.bin).toBeDefined();
     });
   });
 

@@ -92,7 +92,7 @@ function extractPattern(toolName, toolInput) {
  * SECURITY: Never use shell: true with user-controlled arguments.
  * On Windows, invoke soleil-ai-review-engine.cmd directly (no shell needed).
  */
-function runsoleil-ai-review-engineCli(args, cwd, timeout) {
+function runSoleilCli(args, cwd, timeout) {
   const isWin = process.platform === 'win32';
 
   // Detect whether 'soleil-ai-review-engine' is on PATH (cheap check, no execution)
@@ -145,7 +145,7 @@ function handlePreToolUse(input) {
 
   let result = '';
   try {
-    const child = runsoleil-ai-review-engineCli(['augment', '--', pattern], cwd, 7000);
+    const child = runSoleilCli(['augment', '--', pattern], cwd, 7000);
     if (!child.error && child.status === 0) {
       result = child.stderr || '';
     }

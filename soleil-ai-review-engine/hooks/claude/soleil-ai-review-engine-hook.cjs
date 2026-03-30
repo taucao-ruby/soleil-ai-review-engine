@@ -107,7 +107,7 @@ function resolveCliPath() {
  * Spawn a soleil-ai-review-engine CLI command synchronously.
  * Returns the stderr output (KuzuDB captures stdout at OS level).
  */
-function runsoleil-ai-review-engineCli(cliPath, args, cwd, timeout) {
+function runSoleilCli(cliPath, args, cwd, timeout) {
   const isWin = process.platform === 'win32';
   if (cliPath) {
     return spawnSync(
@@ -143,7 +143,7 @@ function handlePreToolUse(input) {
   const cliPath = resolveCliPath();
   let result = '';
   try {
-    const child = runsoleil-ai-review-engineCli(cliPath, ['augment', '--', pattern], cwd, 7000);
+    const child = runSoleilCli(cliPath, ['augment', '--', pattern], cwd, 7000);
     if (!child.error && child.status === 0) {
       result = child.stderr || '';
     }
