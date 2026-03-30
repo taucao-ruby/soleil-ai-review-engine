@@ -114,9 +114,9 @@ describe('CLI end-to-end', () => {
     ].join('\n')).toBe(0);
 
     // Successful analyze should create .soleil-ai-review-engine/ output directory
-    const soleil-ai-review-engineDir = path.join(MINI_REPO, '.soleil-ai-review-engine');
-    expect(fs.existsSync(soleil-ai-review-engineDir)).toBe(true);
-    expect(fs.statSync(soleil-ai-review-engineDir).isDirectory()).toBe(true);
+    const soleilDir = path.join(MINI_REPO, '.soleil-ai-review-engine');
+    expect(fs.existsSync(soleilDir)).toBe(true);
+    expect(fs.statSync(soleilDir).isDirectory()).toBe(true);
   });
 
   describe('unhappy path', () => {

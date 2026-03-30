@@ -364,22 +364,22 @@ describe.each(HOOKS)('hooks e2e ($name)', ({ name, path: hookPath }) => {
     // The hook walks up 5 parent directories looking for .soleil-ai-review-engine.
     // To guarantee none is found, create a deeply nested temp dir at the
     // filesystem root where no .soleil-ai-review-engine could exist in any ancestor.
-    let nosoleil-ai-review-engineDir: string;
+    let noSoleilDir: string;
 
     beforeAll(() => {
       // Use a root-level temp path so parent traversal can't find .soleil-ai-review-engine
       const root = os.platform() === 'win32' ? 'C:\\' : '/tmp';
       const base = path.join(root, `no-soleil-ai-review-engine-${Date.now()}`);
       // Nest 6 levels deep (hook walks up 5) to ensure isolation
-      nosoleil-ai-review-engineDir = path.join(base, 'a', 'b', 'c', 'd', 'e', 'f');
-      fs.mkdirSync(nosoleil-ai-review-engineDir, { recursive: true });
-      spawnSync('git', ['init'], { cwd: nosoleil-ai-review-engineDir, stdio: 'pipe' });
+      noSoleilDir = path.join(base, 'a', 'b', 'c', 'd', 'e', 'f');
+      fs.mkdirSync(noSoleilDir, { recursive: true });
+      spawnSync('git', ['init'], { cwd: noSoleilDir, stdio: 'pipe' });
     });
 
     afterAll(() => {
       // Clean up from the base directory
       const root = os.platform() === 'win32' ? 'C:\\' : '/tmp';
-      const base = path.join(root, path.basename(path.resolve(nosoleil-ai-review-engineDir, '..', '..', '..', '..', '..', '..')));
+      const base = path.join(root, path.basename(path.resolve(noSoleilDir, '..', '..', '..', '..', '..', '..')));
       fs.rmSync(base, { recursive: true, force: true });
     });
 
@@ -389,7 +389,7 @@ describe.each(HOOKS)('hooks e2e ($name)', ({ name, path: hookPath }) => {
         tool_name: 'Bash',
         tool_input: { command: 'git commit -m "x"' },
         tool_output: { exit_code: 0 },
-        cwd: nosoleil-ai-review-engineDir,
+        cwd: noSoleilDir,
       });
 
       const output = parseHookOutput(result.stdout);
@@ -401,7 +401,7 @@ describe.each(HOOKS)('hooks e2e ($name)', ({ name, path: hookPath }) => {
         hook_event_name: 'PreToolUse',
         tool_name: 'Grep',
         tool_input: { pattern: 'somePattern' },
-        cwd: nosoleil-ai-review-engineDir,
+        cwd: noSoleilDir,
       });
 
       const output = parseHookOutput(result.stdout);
