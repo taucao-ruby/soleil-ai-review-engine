@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "soleil-engine-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "soleil-ai-review-engine-web", "run", "dev", "--", "--port", "5174"],
+      "port": 5174
+    },
+    {
+      "name": "soleil-hostel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--host"],
+      "cwd": "C:/Users/Admin/myProject/soleil-hostel/frontend",
+      "port": 5173
+    }
+  ]
+}
