@@ -1,5 +1,5 @@
 # AI Agent Rules
 
-Follow .soleil-ai-review-engine/RULES.md for all project context and coding guidelines.
+Follow AGENTS.md for all project context and coding guidelines.
 
-This project uses soleil-ai-review-engine MCP for code intelligence. See .soleil-ai-review-engine/RULES.md for available tools and best practices.
+This project uses soleil-ai-review-engine MCP for code intelligence. See AGENTS.md for available tools and best practices.
