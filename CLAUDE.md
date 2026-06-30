@@ -1,7 +1,7 @@
 <!-- soleil-ai-review-engine:start -->
 # soleil-ai-review-engine — Code Intelligence
 
-This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2071 symbols, 4820 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2072 symbols, 4821 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
 
 > If any soleil-ai-review-engine tool warns the index is stale, run `npx soleil-engine-cli analyze` in terminal first.
 
@@ -95,6 +95,7 @@ To check whether embeddings exist, inspect `.soleil-ai-review-engine/meta.json` 
 | Blast radius / "What breaks if I change X?" | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-impact-analysis/SKILL.md` |
 | Trace bugs / "Why is X failing?" | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-debugging/SKILL.md` |
 | Rename / extract / split / refactor | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-refactoring/SKILL.md` |
+| Review a PR / assess merge risk / missing test coverage | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-pr-review/SKILL.md` |
 | Tools, resources, schema reference | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-guide/SKILL.md` |
 | Index, status, clean, wiki CLI commands | `.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-cli/SKILL.md` |
 
