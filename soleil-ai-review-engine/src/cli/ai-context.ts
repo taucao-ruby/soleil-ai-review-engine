@@ -54,6 +54,7 @@ function generateSoleilAiReviewEngineContent(projectName: string, stats: RepoSta
 | Blast radius / "What breaks if I change X?" | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-impact-analysis/SKILL.md\` |
 | Trace bugs / "Why is X failing?" | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-debugging/SKILL.md\` |
 | Rename / extract / split / refactor | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-refactoring/SKILL.md\` |
+| Review a PR / assess merge risk / missing test coverage | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-pr-review/SKILL.md\` |
 | Tools, resources, schema reference | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-guide/SKILL.md\` |
 | Index, status, clean, wiki CLI commands | \`.claude/skills/soleil-ai-review-engine/soleil-ai-review-engine-cli/SKILL.md\` |${generatedRows ? '\n' + generatedRows : ''}`;
 
@@ -233,6 +234,11 @@ async function installSkills(repoPath: string): Promise<string[]> {
       name: 'soleil-ai-review-engine-refactoring',
       description: 'Use when the user wants to rename, extract, split, move, or restructure code safely. Examples: "Rename this function", "Extract this into a module", "Refactor this class", "Move this to a separate file"',
       source: { kind: 'file', relativePath: 'soleil-ai-review-engine-refactoring.md' },
+    },
+    {
+      name: 'soleil-ai-review-engine-pr-review',
+      description: 'Use when the user wants to review a pull request, understand what a PR changes, assess risk of merging, or check for missing test coverage. Examples: "Review this PR", "What does PR #42 change?", "Is this PR safe to merge?"',
+      source: { kind: 'file', relativePath: 'soleil-ai-review-engine-pr-review.md' },
     },
     {
       name: 'soleil-ai-review-engine-guide',
