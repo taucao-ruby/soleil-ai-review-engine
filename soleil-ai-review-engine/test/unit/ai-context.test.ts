@@ -77,4 +77,22 @@ describe('generateAIContextFiles', () => {
       // Skills dir may not be created if skills source doesn't exist in test context
     }
   });
+
+  it('emits the canonical re-index command and never a broken npx form', async () => {
+    const stats = { nodes: 10, edges: 20, processes: 1 };
+    await generateAIContextFiles(tmpDir, storagePath, 'TestProject', stats);
+
+    const claudeMdPath = path.join(tmpDir, 'CLAUDE.md');
+    const content = await fs.readFile(claudeMdPath, 'utf-8');
+
+    // Canonical: explicit package + canonical bin (works whether or not the
+    // gitnexus/soleil-ai-review-engine bin aliases stay byte-identical to soleil's).
+    expect(content).toContain('npx -p soleil-engine-cli soleil analyze');
+
+    // `npx soleil-engine-cli <cmd>` (bare, no -p) is not the documented contract —
+    // it only works today via an npm bin-alias-collapse implementation detail.
+    expect(content).not.toMatch(/npx soleil-engine-cli /);
+    // `npx soleil-ai-review-engine <cmd>` is a 404 in a clean environment (MIGRATION.md).
+    expect(content).not.toMatch(/npx soleil-ai-review-engine /);
+  });
 });

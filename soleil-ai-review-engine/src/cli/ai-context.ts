@@ -63,7 +63,7 @@ function generateSoleilAiReviewEngineContent(projectName: string, stats: RepoSta
 
 This project is indexed by soleil-ai-review-engine as **${projectName}** (${stats.nodes || 0} symbols, ${stats.edges || 0} relationships, ${stats.processes || 0} execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
 
-> If any soleil-ai-review-engine tool warns the index is stale, run \`npx ${NPM_PACKAGE} analyze\` in terminal first.
+> If any soleil-ai-review-engine tool warns the index is stale, run \`npx -p ${NPM_PACKAGE} ${CLI_COMMAND} analyze\` in terminal first.
 
 ## Always Do
 
@@ -134,13 +134,13 @@ Before completing any code modification task, verify:
 After committing code changes, the soleil-ai-review-engine index becomes stale. Re-run analyze to update it:
 
 \`\`\`bash
-npx ${NPM_PACKAGE} analyze
+npx -p ${NPM_PACKAGE} ${CLI_COMMAND} analyze
 \`\`\`
 
 If the index previously included embeddings, preserve them by adding \`--embeddings\`:
 
 \`\`\`bash
-npx ${NPM_PACKAGE} analyze --embeddings
+npx -p ${NPM_PACKAGE} ${CLI_COMMAND} analyze --embeddings
 \`\`\`
 
 To check whether embeddings exist, inspect \`.soleil-ai-review-engine/meta.json\` — the \`stats.embeddings\` field shows the count (0 means no embeddings). **Running analyze without \`--embeddings\` will delete any previously generated embeddings.**
