@@ -1,9 +1,9 @@
 <!-- soleil-ai-review-engine:start -->
 # soleil-ai-review-engine — Code Intelligence
 
-This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2072 symbols, 4821 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2073 symbols, 4823 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
 
-> If any soleil-ai-review-engine tool warns the index is stale, run `npx soleil-engine-cli analyze` in terminal first.
+> If any soleil-ai-review-engine tool warns the index is stale, run `npx -p soleil-engine-cli soleil analyze` in terminal first.
 
 ## Always Do
 
@@ -74,13 +74,13 @@ Before completing any code modification task, verify:
 After committing code changes, the soleil-ai-review-engine index becomes stale. Re-run analyze to update it:
 
 ```bash
-npx soleil-engine-cli analyze
+npx -p soleil-engine-cli soleil analyze
 ```
 
 If the index previously included embeddings, preserve them by adding `--embeddings`:
 
 ```bash
-npx soleil-engine-cli analyze --embeddings
+npx -p soleil-engine-cli soleil analyze --embeddings
 ```
 
 To check whether embeddings exist, inspect `.soleil-ai-review-engine/meta.json` — the `stats.embeddings` field shows the count (0 means no embeddings). **Running analyze without `--embeddings` will delete any previously generated embeddings.**
