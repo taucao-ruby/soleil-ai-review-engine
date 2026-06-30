@@ -2,8 +2,8 @@
   "mcpServers": {
     "soleil-ai-review-engine": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "soleil-ai-review-engine@latest", "mcp"]
+      "command": "node",
+      "args": ["soleil-ai-review-engine/dist/cli/index.js", "mcp"]
     }
   }
 }
