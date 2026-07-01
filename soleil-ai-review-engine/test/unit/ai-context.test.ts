@@ -95,4 +95,23 @@ describe('generateAIContextFiles', () => {
     // `npx soleil-ai-review-engine <cmd>` is a 404 in a clean environment (MIGRATION.md).
     expect(content).not.toMatch(/npx soleil-ai-review-engine /);
   });
+
+  it('prunes legacy gitnexus-* skill dirs on install without touching unrelated dirs', async () => {
+    const skillsDir = path.join(tmpDir, '.claude', 'skills', 'soleil-ai-review-engine');
+    const legacyDir = path.join(skillsDir, 'gitnexus-cli');
+    const unrelatedDir = path.join(skillsDir, 'my-custom-skill');
+
+    await fs.mkdir(legacyDir, { recursive: true });
+    await fs.writeFile(path.join(legacyDir, 'SKILL.md'), '---\nname: gitnexus-cli\n---\nstale', 'utf-8');
+    await fs.mkdir(unrelatedDir, { recursive: true });
+    await fs.writeFile(path.join(unrelatedDir, 'SKILL.md'), '---\nname: my-custom-skill\n---\nkeep me', 'utf-8');
+
+    const stats = { nodes: 10 };
+    await generateAIContextFiles(tmpDir, storagePath, 'TestProject', stats);
+
+    const entries = await fs.readdir(skillsDir);
+    expect(entries).not.toContain('gitnexus-cli');
+    expect(entries).toContain('my-custom-skill');
+    expect(entries).toContain('soleil-ai-review-engine-cli');
+  });
 });

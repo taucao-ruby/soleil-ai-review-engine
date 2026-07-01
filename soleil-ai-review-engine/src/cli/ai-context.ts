@@ -205,6 +205,39 @@ async function upsertSoleilAiReviewEngineSection(
   return 'appended';
 }
 
+// Legacy skill-dir name prefixes superseded by the current soleil-ai-review-engine-* naming.
+const LEGACY_SKILL_PREFIXES = ['gitnexus-'];
+
+/**
+ * Remove stale skill directories left behind by earlier naming conventions.
+ * Scoped strictly to `skillsDir` (the soleil-managed .claude/skills/soleil-ai-review-engine/
+ * directory) and to known legacy prefixes -- never touches unrecognized or
+ * user-created directories, and never touches .claude/skills/generated/.
+ */
+async function pruneLegacySkillDirs(skillsDir: string): Promise<string[]> {
+  const removed: string[] = [];
+  let entries;
+  try {
+    entries = await fs.readdir(skillsDir, { withFileTypes: true });
+  } catch {
+    return removed;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    if (!LEGACY_SKILL_PREFIXES.some(prefix => entry.name.startsWith(prefix))) continue;
+
+    try {
+      await fs.rm(path.join(skillsDir, entry.name), { recursive: true, force: true });
+      removed.push(entry.name);
+    } catch (err) {
+      console.warn(`Warning: Could not remove legacy skill dir ${entry.name}:`, err);
+    }
+  }
+
+  return removed;
+}
+
 /**
  * Install soleil-ai-review-engine skills to .claude/skills/soleil-ai-review-engine/
  * Works natively with Claude Code, Cursor, and GitHub Copilot
@@ -287,6 +320,11 @@ Use soleil-ai-review-engine tools to accomplish this task.
       // Skip on error, don't fail the whole process
       console.warn(`Warning: Could not install skill ${skill.name}:`, err);
     }
+  }
+
+  const removedLegacy = await pruneLegacySkillDirs(skillsDir);
+  if (removedLegacy.length > 0) {
+    console.log(`Removed ${removedLegacy.length} legacy skill dir(s): ${removedLegacy.join(', ')}`);
   }
 
   return installedSkills;
