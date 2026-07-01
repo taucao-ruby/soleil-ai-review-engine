@@ -203,7 +203,7 @@ function handlePostToolUse(input) {
   // If HEAD matches last indexed commit, no reindex needed
   if (currentHead && currentHead === lastCommit) return;
 
-  const analyzeCmd = `npx soleil-ai-review-engine analyze${hadEmbeddings ? ' --embeddings' : ''}`;
+  const analyzeCmd = `npx -p soleil-engine-cli soleil analyze${hadEmbeddings ? ' --embeddings' : ''}`;
   sendHookResponse('PostToolUse',
     `soleil-ai-review-engine index is stale (last indexed: ${lastCommit ? lastCommit.slice(0, 7) : 'never'}). ` +
     `Run \`${analyzeCmd}\` to update the knowledge graph.`
