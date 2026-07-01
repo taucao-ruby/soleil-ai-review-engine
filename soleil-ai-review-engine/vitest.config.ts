@@ -6,6 +6,12 @@ export default defineConfig({
     include: ['test/**/*.test.ts'],
     testTimeout: 30000,
     pool: 'forks',
+    // LadybugDB enforces exclusive file locks on Windows, so the shared test DB
+    // (test/global-setup.ts) can't be opened by parallel fork processes — they
+    // collide with "Could not set lock on file". Serialize files on Windows so
+    // each file's fork exits and releases the lock before the next starts.
+    // Linux/macOS allow concurrent opens, so keep parallelism there (fast CI).
+    fileParallelism: process.platform !== 'win32',
     globals: true,
     setupFiles: ['test/setup.ts'],
     teardownTimeout: 3000,
