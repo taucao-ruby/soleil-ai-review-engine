@@ -7,7 +7,11 @@ import { setupCommand } from '../../src/cli/setup.js';
 
 describe('setupCommand skills integration', () => {
   let tempHome: string;
+  // Windows resolves os.homedir() from USERPROFILE, not HOME. Override both so
+  // setup writes into tempHome on every platform instead of the real home dir
+  // (which otherwise fails the assertion on Windows and pollutes ~/.cursor).
   const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
   const testId = `${Date.now()}-${process.pid}`;
   const flatSkillName = `test-flat-skill-${testId}`;
   const dirSkillName = `test-dir-skill-${testId}`;
@@ -17,6 +21,7 @@ describe('setupCommand skills integration', () => {
   beforeAll(async () => {
     tempHome = await fs.mkdtemp(path.join(os.tmpdir(), 'gn-setup-home-'));
     process.env.HOME = tempHome;
+    process.env.USERPROFILE = tempHome;
     await fs.mkdir(path.join(tempHome, '.cursor'), { recursive: true });
 
     // Create temporary source skills to verify both supported source layouts:
@@ -43,7 +48,10 @@ describe('setupCommand skills integration', () => {
   afterAll(async () => {
     await fs.rm(path.join(packageSkillsRoot, `${flatSkillName}.md`), { force: true });
     await fs.rm(path.join(packageSkillsRoot, dirSkillName), { recursive: true, force: true });
-    process.env.HOME = originalHome;
+    if (originalHome === undefined) delete process.env.HOME;
+    else process.env.HOME = originalHome;
+    if (originalUserProfile === undefined) delete process.env.USERPROFILE;
+    else process.env.USERPROFILE = originalUserProfile;
     await fs.rm(tempHome, { recursive: true, force: true });
   });
 
