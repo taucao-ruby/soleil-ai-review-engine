@@ -1,7 +1,7 @@
 <!-- soleil-ai-review-engine:start -->
 # soleil-ai-review-engine — Code Intelligence
 
-This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2073 symbols, 4823 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by soleil-ai-review-engine as **soleil-ai-review-engine** (2073 symbols, 4828 relationships, 154 execution flows). Use the soleil-ai-review-engine MCP tools to understand code, assess impact, and navigate safely.
 
 > If any soleil-ai-review-engine tool warns the index is stale, run `npx -p soleil-engine-cli soleil analyze` in terminal first.
 
