@@ -224,7 +224,7 @@ async function getContextResource(backend: LocalBackend, repoName?: string): Pro
   lines.push('  - cypher: Raw graph queries');
   lines.push('  - list_repos: Discover all indexed repositories');
   lines.push('');
-  lines.push('re_index: Run `npx soleil-ai-review-engine analyze` in terminal if data is stale');
+  lines.push('re_index: Run `npx -p soleil-engine-cli soleil analyze` in terminal if data is stale');
   lines.push('');
   lines.push('resources_available:');
   lines.push('  - soleil-ai-review-engine://repos: All indexed repositories');
@@ -435,7 +435,7 @@ async function getSetupResource(backend: LocalBackend): Promise<string> {
   const repos = await backend.listRepos();
 
   if (repos.length === 0) {
-    return '# soleil-ai-review-engine\n\nNo repositories indexed. Run: `npx soleil-ai-review-engine analyze` in a repository.';
+    return '# soleil-ai-review-engine\n\nNo repositories indexed. Run: `npx -p soleil-engine-cli soleil analyze` in a repository.';
   }
   
   const sections: string[] = [];

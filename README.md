@@ -67,12 +67,12 @@ The CLI indexes your repository and runs an MCP server that gives AI agents deep
 
 ```bash
 # Index your repo (run from repo root)
-npx soleil-ai-review-engine analyze
+npx -p soleil-engine-cli soleil analyze
 ```
 
 That's it. This indexes the codebase, installs agent skills, registers Claude Code hooks, and creates `AGENTS.md` / `CLAUDE.md` context files — all in one command.
 
-To configure MCP for your editor, run `npx soleil-ai-review-engine setup` once — or set it up manually below.
+To configure MCP for your editor, run `npx -p soleil-engine-cli soleil setup` once — or set it up manually below.
 
 ### MCP Setup
 
