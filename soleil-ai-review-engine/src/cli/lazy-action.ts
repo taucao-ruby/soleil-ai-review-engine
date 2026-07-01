@@ -16,11 +16,17 @@ export function createLazyAction<
   exportName: TKey,
 ): (...args: unknown[]) => Promise<void> {
   return async (...args: unknown[]): Promise<void> => {
-    const module = await loader();
-    const action = module[exportName];
-    if (!isCallable(action)) {
-      throw new Error(`Lazy action export not found: ${exportName}`);
+    try {
+      const module = await loader();
+      const action = module[exportName];
+      if (!isCallable(action)) {
+        throw new Error(`Lazy action export not found: ${exportName}`);
+      }
+      await action(...args);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`soleil-ai-review-engine: ${message}`);
+      process.exit(1);
     }
-    await action(...args);
   };
 }
