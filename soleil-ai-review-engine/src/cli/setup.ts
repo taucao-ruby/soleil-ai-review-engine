@@ -16,7 +16,6 @@ import { getGlobalDir } from '../storage/repo-manager.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CLI_COMMAND = 'soleil';
-const NPM_PACKAGE = 'soleil-engine-cli';
 const MCP_SERVER_NAME = 'soleil-ai-review-engine';
 
 interface SetupResult {
@@ -27,18 +26,17 @@ interface SetupResult {
 
 /**
  * The MCP server entry for all editors.
- * On Windows, npx must be invoked via cmd /c since it's a .cmd script.
+ * soleil-engine-cli isn't published to the npm registry, so `npx ...@latest`
+ * 404s for anyone without a prior local/global install. This config is read
+ * later by a different process (Cursor, OpenCode, Claude Code), possibly from
+ * a different project directory, so it points `node` straight at this
+ * install's own built CLI instead of going through npx at all.
  */
-function getMcpEntry() {
-  if (process.platform === 'win32') {
-    return {
-      command: 'cmd',
-      args: ['/c', 'npx', '-y', `${NPM_PACKAGE}@latest`, 'mcp'],
-    };
-  }
+export function getMcpEntry() {
+  const cliPath = path.resolve(__dirname, '..', 'cli', 'index.js').replace(/\\/g, '/');
   return {
-    command: 'npx',
-    args: ['-y', `${NPM_PACKAGE}@latest`, 'mcp'],
+    command: 'node',
+    args: [cliPath, 'mcp'],
   };
 }
 
@@ -109,7 +107,7 @@ async function setupCursor(result: SetupResult): Promise<void> {
   }
 }
 
-async function setupClaudeCode(result: SetupResult): Promise<void> {
+export async function setupClaudeCode(result: SetupResult): Promise<void> {
   const claudeDir = path.join(os.homedir(), '.claude');
   const hasClaude = await dirExists(claudeDir);
 
@@ -118,11 +116,18 @@ async function setupClaudeCode(result: SetupResult): Promise<void> {
     return;
   }
 
+  // Reuse getMcpEntry so this instruction can never drift from what
+  // Cursor/OpenCode actually get written to their configs.
+  const entry = getMcpEntry();
+  const cmdStr = [entry.command, ...entry.args]
+    .map(arg => (/\s/.test(arg) ? `"${arg}"` : arg))
+    .join(' ');
+
   // Claude Code uses a JSON settings file at ~/.claude.json or claude mcp add
   console.log('');
   console.log('  Claude Code detected. Run this command to add soleil-ai-review-engine MCP:');
   console.log('');
-  console.log(`    claude mcp add ${MCP_SERVER_NAME} -- npx -y ${NPM_PACKAGE} mcp`);
+  console.log(`    claude mcp add ${MCP_SERVER_NAME} -- ${cmdStr}`);
   console.log('');
   result.configured.push('Claude Code (MCP manual step printed)');
 }
