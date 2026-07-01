@@ -84,6 +84,10 @@ function runCliRaw(extraArgs: string[], cwd: string, timeoutMs = 15000) {
     env: {
       ...process.env,
       NODE_OPTIONS: `${process.env.NODE_OPTIONS || ''} --max-old-space-size=8192`.trim(),
+      // A dev machine's $HOME can itself be a git repo, which makes os.tmpdir()
+      // fixtures look like they're inside a work tree. Cap git's upward search
+      // at the temp root so non-git fixtures are truly non-git (as in CI).
+      GIT_CEILING_DIRECTORIES: os.tmpdir(),
     },
   });
 }
@@ -174,6 +178,10 @@ describe('CLI end-to-end', () => {
         env: {
           ...process.env,
           NODE_OPTIONS: `${process.env.NODE_OPTIONS || ''} --max-old-space-size=8192`.trim(),
+          // A dev machine's $HOME can itself be a git repo, which makes os.tmpdir()
+          // fixtures look like they're inside a work tree. Cap git's upward search
+          // at the temp root so non-git fixtures are truly non-git (as in CI).
+          GIT_CEILING_DIRECTORIES: os.tmpdir(),
         },
       });
     }
